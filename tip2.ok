@@ -35,9 +35,34 @@ BEGIN {
 
 """
 
+expands to
+
+```c
+BEGIN { 
+  a["b"]["c"]=1
+  a["b"]["d"]=2
+  print(length(a["b"]) == 2)
+}
+```
+
+
+### When you need to use "`.`"...
+
 Aside:
 If you need to use "`.`" between words (e.g. in some
 file name), then use `__`.
 
+For example, don't use
+
+```
+filename.csv
+```
+
+but instead
+use
+
+```
+filename__csv
+```
 
 """
