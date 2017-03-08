@@ -1,0 +1,129 @@
+#!/bin/bash
+# /* vim: set filetype=sh ts=2 sw=2 sts=2 et : */
+
+MyName="Alfred Oliver Kerninghan"
+MyEmail="awk@att.com"
+
+Awk=_var/awk
+Tmp=_var/tmp
+Docs=docs
+
+if [ -f "./ok.rc" ]; then 
+  . ./ok.rc
+fi
+
+dirs() {
+  mkdir -p $Docs $Awk $Tmp
+}
+makeawk() {
+  echo "# $1 to _awk/" 1>&2
+  cat $1 | gawk '
+  BEGIN {In = 1}
+  gsub(/^"""/,"") {
+    In =  1 - In
+  }
+  { txt = gensub(/\.([a-zA-Z_])([a-zA-Z0-9_]*)/,
+                 "[\"\\1\\2\"]",
+                 "g",
+                 $0) 
+    gsub(/__/,".",txt)
+    print (In ? "" : "## ") txt
+  }
+  '
+}
+makedoc() {
+  echo "# $1 to docs/" 1>&2
+  cat $1 | gawk '
+  BEGIN {In = 1; Pre=1}
+  gsub(/^"""/,"") {
+    In =  1 - In
+    if (Pre)
+       Pre=0
+    else {
+      if (In)  {
+        print ""
+        print "```c " $0
+      } else {
+        print "```" $0
+        print ""
+     }
+    }
+    next
+  }
+  Pre  { next }
+      { sub(/^#/,"")
+       print }
+  END  { if (In) print "```\n" }
+  '
+}
+vars() {
+  if [ -f "$Tmp/awkvars.out" ]
+  then
+    egrep -v '[A-Z][A-Z]' $Tmp/awkvars.out |
+    sed 's/^/W> rogue local: /'
+  fi
+}
+profile() {
+  if [ -f "$Tmp/awkprof.out" ]; then
+    cat $Tmp/awkprof.out
+  fi
+}
+run() {
+  gawk --source 'BEGIN { '"$*"'}'
+}
+tests() {
+  for i in *ok.ok; do
+    f=${i%.*}
+    echo ""
+    echo "### --- $f -------------"
+    ./ok $f
+  done | tee $Tmp/test.out
+  echo -n "PASSED "; grep -c PASSED $Tmp/test.out
+  echo -n "FAILED "; grep -c FAILED $Tmp/test.out
+}
+ready() {
+  for ok1 in *.ok; do
+  	awk1=$Awk/${ok1%.*}.awk
+  	doc1=$Docs/${ok1%.*}.md
+	if [ "$ok1" -nt "$awk1" ]; then makeawk $ok1 > $awk1; fi
+	if [ "$ok1" -nt "$doc1" ]; then makedoc $ok1 > $doc1; fi
+        git add $Docs
+	git add $Docs/*
+  done
+}
+gitready() {
+  git config --global user.email $MyEmail
+  git config --global user.name  $MyName
+  git config --global credential.helper cache
+  git config credential.helper 'cache --timeout=3600'
+}
+old() {
+  gitready
+  git pull origin master
+}
+new() {
+  gitready
+  git add .
+  git commit -am newStuff
+  git push origin master
+}
+
+dirs
+ready
+
+if   [ "$1" == "new"     ]; then new;
+elif [ "$1" == "old"     ]; then old;
+elif [ "$1" == "profile" ]; then profile;
+elif [ "$1" == "tests"   ]; then tests;
+elif [ "$1" == "do"      ]; then 
+  shift
+  run "$*"
+elif [ -f "$Awk/$1.awk"  ]; then
+  AWKPATH="$Awk:$AWKPATH" gawk          \
+       --dump-variables=$Tmp/awkvars.out \
+       --profile=$Tmp/awkprof.out         \
+       -f $1.awk
+  vars;
+else 
+	echo "usage ./ok (new | old | profile | file)"
+fi 
