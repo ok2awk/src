@@ -2,7 +2,7 @@
 
 """
 
-## Tip2: Use dot notation 
+## Tip10: Use dot notation 
 
 AWK's associative arrays make it easy to build and
 access complex nested structures. Also, due to their

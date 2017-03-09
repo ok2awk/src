@@ -8,6 +8,21 @@ Standard background stuff.
 
 BEGIN { FS=OFS="," }
 
+function tests(fs,   a,f,i,n) {
+   n = split(fs,a,",")
+   for(i=1;i<=n;i++) {
+     f = a[i]
+     @f(f)
+}}
+
+function is(f,want,got,    pre) {
+  pre = "#TEST:\t" f "\t" want "\t" got 
+  if (want == got)
+    print pre "\tPASSED" 
+  else
+    print pre "\tFAILED"
+}
+
 function lt(a,b) { return a < b }
 function gt(a,b) { return a > b }
 

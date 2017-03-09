@@ -1,0 +1,13 @@
+# /* vim: set filetype=awk ts=2 sw=2 sts=2 et : */
+
+"""
+
+## Tip21: Use one Constuctors  
+
+One way to build data dictionaries
+
+```
+function Symbol(i) {
+}
+```
+"""

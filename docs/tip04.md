@@ -1,0 +1,67 @@
+
+# Tip04: Use a Test Suite 
+
+For all my files `xx.ok`, I add a test suite `xxok.ok`
+whose first line is
+
+```
+@include "ok"
+@include "xx"
+```
+
+Then there are test functions that accept
+a context variable and call a test report 
+function `is`. The syntax of that call is
+
+```
+is(context, want, got)
+```
+
+For example:
+
+```c
+function _ltgt(f) {
+  is(f,1, gt(10,8))
+  is(f,0, gt(6,8))
+  is(f,1, lt(5,10))
+  is(f,0, lt(8,6))
+}
+```
+
+This is called with the `tests` function
+that accepts a string of function names to call:
+
+```
+BEGIN {
+  tests("_ltgt,_med")
+}
+```
+
+When all this runs, it prints something like:
+
+```
+TEST:	_ltgt	1		1		PASSED
+TEST:	_ltgt	0		0		PASSED
+TEST:	_ltgt	1		1		PASSED
+TEST:	_ltgt	0		0		PASSED
+TEST:	_med	5.5	5.5	PASSED
+TEST:	_med	4.5	4.5	PASSED
+TEST:	_med	2		2		PASSED
+TEST:	_med	4		4		PASSED
+```
+
+In this report, the last word will be `FAILED` if
+the `want` and `got` values are different.
+
+Note that the `ok` tool has a flag `tests` which:
+
+- Runs all the test suite code; i.e. everything
+in some `xxok.ok` file
+- Then counts the number of `PASSED` and `FAILED`s.
+
+
+```c 
+
+
+```
+
