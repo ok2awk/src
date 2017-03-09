@@ -7,16 +7,20 @@ to raw AWK.
 
 ## Files
 
-`Ok2awk` pulls apart `*.ok` files into
+`Ok2awk` pulls apart `*.ok` files to generate:
 
-- A documentation file `*.md`.
-This documentation is pulled from  markdown
-comments found in multi-line strings
-that start and end with triple double-quotes `===`.
-- A code file *.awk`.
-For these code files,
-`Ok` comments out those multi-line strings (by prefixing
-all those lines with `#`).
+- A documentation file `*.md`.  This documentation is pulled from  markdown
+  comments found in multi-line strings that start and 
+  end with triple double-quotes `===`.
+- A code file *.awk`.  For these code files, `Ok` comments out those 
+  multi-line strings (by prefixing all those lines with `#`).
+
+```
+           /---> xx.md  
+xx.ok --->/
+          \
+           \---> xx.awk
+```
 
 The command line for calling `ok` on `xx.ok` is
 
@@ -24,6 +28,11 @@ The command line for calling `ok` on `xx.ok` is
 ./ok xx
 
 ```
+
+As a side-effect of calling `ok`, any changes in the `*.ok`
+files in the local directory are updated into
+`*.md` and `*.awk` files.
+
 
 ## Configuration
 
@@ -39,6 +48,12 @@ MyName="'Tim Menzies'"
 MyEmail="'tim@menzies.us'"
 
 ```
+
+## Installation
+
+A minimal install of `ok2awk` are the files `ok`, `ok.rc` and a library
+of standard functions `ok.ok`.
+
 
 ```c 
 
