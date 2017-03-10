@@ -72,22 +72,24 @@ run() {
   gawk --source 'BEGIN { '"$*"'}'
 }
 tests() {
-  for i in *ok.ok; do
-    f=${i%.*}
-    echo ""
-    echo "### --- $f -------------"
-    ./ok $f
-  done | tee $Tmp/test.out
-  echo -n "PASSED "; grep -c PASSED $Tmp/test.out
-  echo -n "FAILED "; grep -c FAILED $Tmp/test.out
+  for n in $*; do
+    for i in *$n.ok; do
+      f=${i%.*}
+      echo ""
+      echo "### --- $f -------------"
+      ./ok $f
+    done | tee $Tmp/test$n.out
+    echo -n "PASSED "; grep -c PASSED $Tmp/test$n.out
+    echo -n "FAILED "; grep -c FAILED $Tmp/test$n.out
+  done
 }
 ready() {
   for ok1 in *.ok; do
   	awk1=$Awk/${ok1%.*}.awk
   	doc1=$Docs/${ok1%.*}.md
-	if [ "$ok1" -nt "$awk1" ]; then makeawk $ok1 > $awk1; fi
-	if [ "$ok1" -nt "$doc1" ]; then makedoc $ok1 > $doc1; fi
-        git add $Docs
+	  if [ "$ok1" -nt "$awk1" ]; then makeawk $ok1 > $awk1; fi
+	  if [ "$ok1" -nt "$doc1" ]; then makedoc $ok1 > $doc1; fi
+         git add $Docs
 	git add $Docs/*
   done
 }
@@ -114,7 +116,10 @@ ready
 if   [ "$1" == "new"     ]; then new;
 elif [ "$1" == "old"     ]; then old;
 elif [ "$1" == "profile" ]; then profile;
-elif [ "$1" == "tests"   ]; then tests;
+elif [ "$1" == "1"       ]; then tests 1;
+elif [ "$1" == "12"      ]; then tests 1 2;
+elif [ "$1" == "123"     ]; then tests 1 2 3;
+elif [ "$1" == "1234"    ]; then tests 1 2 3 4;
 elif [ "$1" == "do"      ]; then 
   shift
   run "$*"
