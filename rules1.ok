@@ -1,0 +1,14 @@
+# /* vim: set filetype=awk ts=2 sw=2 sts=2 et : */
+
+"""
+
+## Testing Rules
+
+"""
+
+@include "ok"
+@include "rules"
+
+BEGIN {
+  tests("")
+}
