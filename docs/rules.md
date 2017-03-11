@@ -1,15 +1,149 @@
 
-# About Rules
+# Rules for Cleaner AWK
 
-AWK is often used as a language for hacking small scripts, or prototyping
-throw away scripts.  But after many years of coding in AWK, I've realized
-that the langage can also be used for structuring more complex scripts.
+AWK is often used as a quick and dirty little language for writing quick
+and dirty scripts-- tiny one-liners or little throwaway prototypes.
+But that is not how I use the languge.  Instead, I treat AWK as a
+meditation on the nature of programming:
 
-So here I record my "rules for big AWK"; i.e.  my methods for doing
-writing  abstract data  type libraries in AWK.
+- So much that we value in supposedly better, more complex languages, can be easily
+  emulated in much simpler languages like AWK. 
+- So much functionality that we value
+  in more complex systems can be quickly implemented in a few lines of AWK. 
 
-Note that some of these rules need a little scripting support-- which
-I've coded up in a script called `ok` (described below).
+So AWK has become my bullsh*t detector about programming fads.  Are we
+making programming needlessly more complex? Are there fundamentally simpler
+alternatives-- some of which we have known about for decades such as AWK?
+You need to form your own answers to these questions. But to help you think
+about it, I share my AWK code-- just to illustrate how much can be done
+with so little.
+
+Having said that, sometimes AWK code is _too_ dirty.  Where the language
+fails is its packages-- there are none.  This is bad.  In other languages
+(Python, PHP, Ruby, etc), programmers have ready access to large libraries
+of code and package management systems that let them quickly find and
+download whatever they want.
+
+If the AWK community cannot clean up its act and 
+solve the package problem, it will never be taken
+seriously.
+So in the following, I offer my rules for writing and sharing AWK packages.
+Some of these rules need a little scripting support-- which
+I've coded up in a tool called `ok` (described below).
+
+To install `ok`, grab three files from github.com/ok2awk/src:
+
+- `ok`    
+- `ok.rc` : for setting config variables
+- `ok.ok` : some standard functions
+
+To use the tool, edit `ok.rc` (its commments will tell you what to do)
+then call it on a local source code file (without any extension):
+
+     ./ok file
+
+Remember: its ok 2 awk!
+
+# Rule: Share Your Code on the Web
+
+Code is useful to other people, but only if other people can access it.
+So my AWK makes extensive
+use of multi-line comments containing Markdown notes,
+spread around the code (these comments start and end with `===` at front
+of line). 
+
+To make these web-readable, I work in a git directory
+with a `docs` sub-directory. Inside `docs` are `*.md` Markdown
+files auto-generated from my source code. After that, all the details
+of displaying on the web is handled by Github. In that tool, any repository
+`gitbub.com/org/repo`
+with a `docs` sub-directory produces web-accessible pretty-printed files
+at `org.github.io/repo`.
+
+Next, I write my code using the extension `*.ok`. The `ok` tool parses these files
+to generate the `*.md` files in `docs` and executable awk code (with all the Markdown
+commented out) in `*.awk` files. So the workflow looks like this:
+
+```
+                    /---> docs/xx.md  
+xx.ok ---> ok ---> /
+                   \
+                    \---> _var/awk/xx.awk
+```
+
+Note that the pathnames shown above can be changed in the `ok.rc` file.
+Note also that when AWK is called, it needs to be told about where to find the `*.awk` files.
+So when the `ok` took runs code, it uses the following syntax
+(and `$Awk` is something set up by the `ok` tool:
+
+```
+AWKPATH="$Awk:$AWKPATH" gawk          \
+     --dump-variables=$Tmp/awkvars.out \# used later, for debugging
+     --profile=$Tmp/awkprof.out         \# used later, for debugging
+     -f $1.awk
+```
+
+
+
+# Rule: Write Unit Tests
+
+For every `xx.ok` file, I create a `xx1.ok` unit test file. The header of that test file 
+contains:
+
+      @include "xx" # i.e. load the code file
+      @include "ok" # i.e. load the test suite functions from ok.ok
+
+This is followed by test functions. Each of these functions
+accepts an string that tells the function its own name;
+and prints out test results using the `is` function:
+
+       is(functionName, want, got)
+
+For example:
+
+```
+
+```
+
+
+The last line of that file lists the test functions to call:
+
+      BEGIN { tests("test1,test2,test3") }
+
+
+
+# Rule: Standardized Source Code Conventions
+
+Any text before the first comment is not added to the Markdown files. Thie means
+my source files can contain obscure header information that won't be displayed on the web.
+
+My source file headers contain meta-information about the code:
+
+```
+ /* vim: set filetype=awk ts=2 sw=2 sts=2 et : */
+OK.tips.author  = "'Tim Menzies'"
+OK.tips.email   = "tim@menzies.us"
+OK.tips.version = "0.1"
+OK.tips.license = "'opensource.org/licenses/BSD-3-Clause"
+OK.tips.more    = "ok2awk.github.io/src/rules"
+```
+
+The first line is a  mode line telling my favorite editor (VIM)
+to treat this file as an AWK file.
+To change that mode line, edit the config file `ok.rc`.
+mode
+
+The `ok` tool has a function for initializing my kind of source code file.  A call to
+
+   ./ok file mycode
+
+will generate two files:
+
+1. `mycode.ok` for the source code;
+2. `mycode1.ok` for a test suite for the source code. The header of this file
+   contains `@include "mycode"`;
+ 
+
 
 # Rule: Add Nested Accessors
 

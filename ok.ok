@@ -41,6 +41,7 @@ function isnum(x) {
   return x=="" ? 0 : x == (0+strtonum(x)) 
 }
 
+BEGIN {print 1}
 function median(lst,
                 n,p,q,lst1) {
   n = asort(lst,lst1)
