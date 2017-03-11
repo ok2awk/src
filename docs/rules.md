@@ -12,11 +12,11 @@ meditation on the nature of programming:
   in more complex systems can be quickly implemented in a few lines of AWK. 
 
 So AWK has become my bullsh*t detector about programming fads.  Are we
-making programming needlessly more complex? Are there fundamentally simpler
-alternatives-- some of which we have known about for decades such as AWK?
-You need to form your own answers to these questions. But to help you think
-about it, I share my AWK code-- just to illustrate how much can be done
-with so little.
+making programming needlessly more complex? Are there fundamentally
+simpler alternatives-- some of which we have known about for decades
+such as AWK?  You need to form your own answers to these questions. But
+to help you think about it, I share my AWK code-- just to illustrate
+how much can be done with so little.
 
 Having said that, sometimes AWK code is _too_ dirty.  Where the language
 fails is its packages-- there are none.  This is bad.  In other languages
@@ -24,18 +24,17 @@ fails is its packages-- there are none.  This is bad.  In other languages
 of code and package management systems that let them quickly find and
 download whatever they want.
 
-If the AWK community cannot clean up its act and 
-solve the package problem, it will never be taken
-seriously.
-So in the following, I offer my rules for writing and sharing AWK packages.
-Some of these rules need a little scripting support-- which
-I've coded up in a tool called `ok` (described below).
+If the AWK community cannot clean up its act and solve the package
+problem, it will never be taken seriously.  So in the following, I offer
+my rules for writing and sharing AWK packages.  Some of these rules need
+a little scripting support-- which I've coded up in a tool called `ok`
+(described below).
 
 To install `ok`, grab three files from github.com/ok2awk/src:
 
-- `ok`    
-- `ok.rc` : for setting config variables
-- `ok.ok` : some standard functions
+- `ok`    : make this executable with `chmod +x ok`;
+- `ok.rc` : for setting config variables;
+- `ok.ok` : some standard functions.
 
 To use the tool, edit `ok.rc` (its commments will tell you what to do)
 then call it on a local source code file (without any extension):
@@ -47,22 +46,21 @@ Remember: its ok 2 awk!
 # Rule: Share Your Code on the Web
 
 Code is useful to other people, but only if other people can access it.
-So my AWK makes extensive
-use of multi-line comments containing Markdown notes,
-spread around the code (these comments start and end with `===` at front
-of line). 
+So my AWK makes extensive use of multi-line comments containing Markdown
+notes, spread around the code (these comments start and end with `===`
+at front of line).
 
-To make these web-readable, I work in a git directory
-with a `docs` sub-directory. Inside `docs` are `*.md` Markdown
-files auto-generated from my source code. After that, all the details
-of displaying on the web is handled by Github. In that tool, any repository
-`gitbub.com/org/repo`
+To make these web-readable, I work in a git directory with a `docs`
+sub-directory. Inside `docs` are `*.md` Markdown files auto-generated
+from my source code. After that, all the details of displaying on the web
+is handled by Github. In that tool, any repository `gitbub.com/org/repo`
 with a `docs` sub-directory produces web-accessible pretty-printed files
 at `org.github.io/repo`.
 
-Next, I write my code using the extension `*.ok`. The `ok` tool parses these files
-to generate the `*.md` files in `docs` and executable awk code (with all the Markdown
-commented out) in `*.awk` files. So the workflow looks like this:
+Next, I write my code using the extension `*.ok`. The `ok` tool parses
+these files to generate the `*.md` files in `docs` and executable awk code
+(with all the Markdown commented out) in `*.awk` files. So the workflow
+looks like this:
 
 ```
                     /---> docs/xx.md  
@@ -72,50 +70,73 @@ xx.ok ---> ok ---> /
 ```
 
 Note that the pathnames shown above can be changed in the `ok.rc` file.
-Note also that when AWK is called, it needs to be told about where to find the `*.awk` files.
-So when the `ok` took runs code, it uses the following syntax
-(and `$Awk` is something set up by the `ok` tool:
+Note also that when AWK is called, it needs to be told about where to
+find the `*.awk` files.  So when the `ok` took runs code, it uses the
+following syntax (and `$Awk` and `$Tmp` are set from `ok.rc`):
 
 ```
 AWKPATH="$Awk:$AWKPATH" gawk          \
-     --dump-variables=$Tmp/awkvars.out \# used later, for debugging
-     --profile=$Tmp/awkprof.out         \# used later, for debugging
+     --dump-variables=$Tmp/awkvars.out \
+     --profile=$Tmp/awkprof.out         \
      -f $1.awk
 ```
 
-
+In the above, the `--dump-variables` and `--profile` flags are debugging
+tools, explained below.
 
 # Rule: Write Unit Tests
 
-For every `xx.ok` file, I create a `xx1.ok` unit test file. The header of that test file 
-contains:
+For every `xx.ok` file, I create a `xx1.ok` unit test file.  The
+number ``1'' denotes test priority and the `ok` tool can be used
+to call just the tests with a particular priority. My tests are usually
+priority ``1'' but, if they are really slow to run, I give them a lower priority.
+
+The header of a  test file contains:
 
       @include "xx" # i.e. load the code file
       @include "ok" # i.e. load the test suite functions from ok.ok
 
-This is followed by test functions. Each of these functions
-accepts an string that tells the function its own name;
-and prints out test results using the `is` function:
+This is followed by test functions. Each of these functions accepts an
+string that tells the function its own name; and prints out test results
+using the `is` function:
 
        is(functionName, want, got)
 
-For example:
+For example, the following test function will print `PASSED` three
+times, since all these `gots` (in argument 2) satisfies the `wants`
+(in argument 3).
 
 ```
-
+function _ltgt(i) {
+  #is(i, want, got)
+  is(i,  1,    gt(10,8))  # is 10 >  8
+  is(i,  0,    gt(6,8))   # is  6 >  8
+}
+function _index(i) {
+  #is(i, want, got)
+  is(i,  3,    index("peanut", "an"))  
+}
 ```
 
+The last line of that file uses the `tests` function
+to call the above test functions.
 
-The last line of that file lists the test functions to call:
+      BEGIN { tests("_ltgt,_index") }
 
-      BEGIN { tests("test1,test2,test3") }
+When this runs, it prints PASSED or FAILED next to the name of the
+test.  The `ok` tool can run the test files then count the number of
+passes/fails. For example:
 
-
+     ./ok 1    # runs tests priority 1
+     ./ok 12   # runs tests priority 1 and 2
+     ./ok 123  # runs tests priority 1 and 2 and 3
+     ./ok 1234 # runs tests priority 1 and 2 and 3 and 4
 
 # Rule: Standardized Source Code Conventions
 
-Any text before the first comment is not added to the Markdown files. Thie means
-my source files can contain obscure header information that won't be displayed on the web.
+Any text before the first comment is not added to the Markdown files. Thie
+means my source files can contain obscure header information that won't
+be displayed on the web.
 
 My source file headers contain meta-information about the code:
 
@@ -128,12 +149,12 @@ OK.tips.license = "'opensource.org/licenses/BSD-3-Clause"
 OK.tips.more    = "ok2awk.github.io/src/rules"
 ```
 
-The first line is a  mode line telling my favorite editor (VIM)
-to treat this file as an AWK file.
-To change that mode line, edit the config file `ok.rc`.
-mode
+The first line is a  mode line telling my favorite editor (VIM) to treat
+this file as an AWK file.  To change that mode line, edit the config file
+`ok.rc`.  mode
 
-The `ok` tool has a function for initializing my kind of source code file.  A call to
+The `ok` tool has a function for initializing my kind of source code file.
+A call to
 
    ./ok file mycode
 
@@ -147,8 +168,7 @@ will generate two files:
 
 # Rule: Add Nested Accessors
 
-The `ok` script converts words seperated
-by "." into array references. So
+The `ok` script converts words seperated by "." into array references. So
 
      a.b["c"].d 
    
@@ -158,10 +178,9 @@ becomes
 
 # Rule: Take Care when Initializing Nested Arrays
 
-AWK's default initialization method is to use
-empty strings as the default value for new array entries.
-To change that, such that nested arrays can
-be initialized, I've written a function called `has `that:
+AWK's default initialization method is to use empty strings as the
+default value for new array entries.  To change that, such that nested
+arrays can be initialized, I've written a function called `has `that:
 
 - Initializes nested arrays by add a nested key;
 - Then deletes that key;
@@ -175,8 +194,8 @@ function has(lst,key) {
 ```
 
 
-Nested intiailizations use a `fun` function that construct
-the recursive contents.  
+Nested intiailizations use a `fun` function that construct the recursive
+contents.
 
 
 ```c 
@@ -186,8 +205,8 @@ function have(lst,key,fun) {
 ```
 
 
-The `haves` function handles
-nested constructors with variable number of arguments:
+The `haves` function handles nested constructors with variable number
+of arguments:
 
 
 ```c 
@@ -205,17 +224,14 @@ The next rule shows examples of using `has, have, haves`.
 
 # Rule: Use Constructors
 
-When reading other people's code, it is useful
-to have a data definition syntax. This lets newcomers
-get a quick overview of how your code works.
+When reading other people's code, it is useful to have a data definition
+syntax. This lets newcomers get a quick overview of how your code works.
 
-My data definition syntax for AWK uses nested
-lists and the `has` function described above. 
-My data constructors start with an uppercase letter.
-For example, the following `Person` has a
-year of birth (`yob`), a `gender`, a `jobHistory`
-list (which is initially just an empty list) and
-a `name`.
+My data definition syntax for AWK uses nested lists and the `has` function
+described above.  My data constructors start with an uppercase letter.
+For example, the following `Person` has a year of birth (`yob`), a
+`gender`, a `jobHistory` list (which is initially just an empty list)
+and a `name`.
 
 
 ```c 
@@ -236,25 +252,22 @@ Calling `Person(i,"Omar","Khayyam", "m",1048)`
 makes "`i`" 
 # Rule: Don't Use /pattern/ {action}
 
-This rule is probably not going to be very popular with
-traditional AWKers but the more I code in AWK, the more I use
-functions rather than the classic AWK
-`/pattern/ {action}' main top-level loop. 
+This rule is probably not going to be very popular with traditional
+AWKers but the more I code in AWK, the more I use functions rather than
+the classic AWK `/pattern/ {action}' main top-level loop.
 
-We could argue this, it you want
-(my email is tim@menzies.us),
-but it axiomatic that if you want to build libraries
-of reusable sub-routines, then those sub-routines
-cannot all assume that they
-control the main top-level routine.
+We could argue this, it you want (my email is tim@menzies.us), but it
+axiomatic that if you want to build libraries of reusable sub-routines,
+then those sub-routines cannot all assume that they control the main
+top-level routine.
 
-It is simple enough to replace `/pattern/ {action}` with
-the generic readloop function shown in the next rule.
+It is simple enough to replace `/pattern/ {action}` with the generic
+readloop function shown in the next rule.
 
 # Rule: Use Less  Globals
 
-Most AWK scripts have lots of globals,
-which makes it hard to build libraries. 
+Most AWK scripts have lots of globals, which makes it hard to build
+libraries.
 
 So use less globals, ac
 
