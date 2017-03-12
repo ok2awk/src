@@ -48,8 +48,7 @@ function div1(i,lst,max,   n,mid,j,k,sd1,nl,nr) {
   Num(i.left)
   Num(i.right) 
   for(j=1; j<=n; j++) {
-    k = lst[j]
-    Num1(i,k)
+    k= Num1(i, lst[j])
     if (j < mid) 
       left[  ++nl ] = Num1(i.left,k)
     else 
