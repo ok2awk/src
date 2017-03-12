@@ -9,6 +9,16 @@
 @include "ok"
 @include "csv"
 
+function _data(f,  i) {
+	Csv(i,"data/auto10__csv")
+	CsvRead(i)
+	is(f, 10, length(i.rows))
+	is(f, 15, i.rows[10][7])
+	is(f, 1,  2 in i.num)
+	is(f, 0,  1 in i.num)
+	is(f, 1,  7 in i.more)
+}
+
 BEGIN {
-  tests("")
+	tests("_data")
 }

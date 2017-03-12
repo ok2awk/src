@@ -15,6 +15,14 @@ BEGIN {
 @include "ok"
 @include "csv"
 
+function Nums(i,  lvl, q){
+  q=","
+  print(lvl "[" int(i.lo*100) q int(i.hi*100) q int(i.sd*100) "]")
+  if (length(i.left))
+    Nums(i.left,lvl "|  ")
+  if (length(i.right))
+    Nums(i.right,lvl "|  ")
+}
 function Num(i) { 
   i.n  = i.mu = i.m2 = i.sd = 0 
   i.lo =  1e32
@@ -28,6 +36,7 @@ function Num1(i,v,          delta) {
   if (v < i.lo) i.lo = v
   if (v > i.hi) i.hi = v
   i.n  += 1
+  i.all[i.n] = v
   delta = v - i.mu
   i.mu += delta/i.n
   i.m2 += delta*(v-i.mu)
@@ -35,32 +44,31 @@ function Num1(i,v,          delta) {
 	  i.sd = (i.m2/(i.n-1))^0.5
   return v
 }
-function div(i,lst1) {
+function div(i,lst1,lst2) {
   asort(lst1,lst2)
   Num(i)
   div1(i, lst2, length(lst2)**0.5 )
 }
-function div1(i,lst,max,   n,mid,j,k,sd1,nl,nr) {
-  n = length(i.all) 
-  if (n < max) return
-  if (lst[n]/lst[1] < 0.99) return 
-  mid = int(n / 2)
+function div1(i,lst,min,     e,n,mid,j,k,sd) {
+  e=0.0000001
+  n = length(lst) 
+  if (n < min) return
+  if (lst[n]/(lst[1]+e) < 0.99) return 
   Num(i.left)
   Num(i.right) 
-  for(j=1; j<=n; j++) {
-    k= Num1(i, lst[j])
-    if (j < mid) 
-      left[  ++nl ] = Num1(i.left,k)
-    else 
-      right[ ++nr ] = Num1(i.right,k)
-  }
-  if (i.left.mu / i.right.mu < 0.99) {
-    sd1 = i.left.n/i.n*i.left.sd + i.right.n/i.n*i.right.sd
-    if (sd1 / i.sd < 0.99)
-      div1(i.left,  left,  max)
-      div1(i.right, right, max)
-      return 
-  }
+  for(j=1; j<int(n/2); j++) 
+    Num1(i.left, 
+         Num1(i, lst[j]))
+  for(j=j+1; j<=n; j++) 
+    Num1(i.right, 
+         Num1(i, lst[j]))
+  if (i.left.mu / (i.right.mu+e) < 0.99) {
+    sd = i.left.n/n*i.left.sd + i.right.n/n*i.right.sd
+    if (sd / (i.sd+1) < 0.99) {
+      div1(i.left,  i.left.all, min)
+      div1(i.right, i.right.all, min) 
+      return
+  }}
   empty(i.left)
   empty(i.right)
 }
