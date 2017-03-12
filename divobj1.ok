@@ -10,7 +10,7 @@
 @include "divobj"
 
 function _div(f,     n,i,lst) {
-	n=1000
+	n=256
 	while(n--)
 		lst[n] = rand()**0.5
 	div(i, lst)
