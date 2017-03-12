@@ -44,24 +44,21 @@ function Num1(i,v,          delta) {
 	  i.sd = (i.m2/(i.n-1))^0.5
   return v
 }
-function div(i,lst1,lst2) {
+function div(i,lst1,lst2,n) {
   asort(lst1,lst2)
   Num(i)
+  for(n in lst2) Num1(i,lst2[n])
   div1(i, lst2, length(lst2)**0.5 )
 }
-function div1(i,lst,min,     e,n,mid,j,k,sd) {
+function div1(i,lst,min,     e,n,j,sd) {
   e=0.0000001
   n = length(lst) 
   if (n < min) return
   if (lst[n]/(lst[1]+e) < 0.99) return 
   Num(i.left)
   Num(i.right) 
-  for(j=1; j<int(n/2); j++) 
-    Num1(i.left, 
-         Num1(i, lst[j]))
-  for(j=j+1; j<=n; j++) 
-    Num1(i.right, 
-         Num1(i, lst[j]))
+  for(j=1  ; j<int(n/2); j++) Num1(i.left,  lst[j])
+  for(j=j+1; j<=n;       j++) Num1(i.right, lst[j])
   if (i.left.mu / (i.right.mu+e) < 0.99) {
     sd = i.left.n/n*i.left.sd + i.right.n/n*i.right.sd
     if (sd / (i.sd+1) < 0.99) {
