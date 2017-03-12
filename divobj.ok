@@ -61,23 +61,26 @@ function Div1(i,lst1,    lst2,j,n) {
 }
 function DivRecurse(i, t,     n,j,sd) {
   n = length(t.all) 
-  if (n < i.min)        
-    return
+  if (n < 2*i.min)        
+    return 0
   if (t.all[n] - t.all[1] < i.epsilon) 
-    return
+    return 0
   Node(t.left)
   Node(t.right) 
   while(j < n/2)
     Node1(t.left,  t.all[++j])
   while(j < n)
     Node1(t.right, t.all[++j])
-  if ( t.right.mu -  t.left.mu >= i.epsilon) {
-    sd = t.left.n/n*t.left.sd + t.right.n/n*t.right.sd
-    if (sd < t.sd) {
-      DivRecurse(i, t.left)
-      DivRecurse(i, t.right)
-      return
-  }}
+  if (t.right.mu -  t.left.mu >= i.epsilon) 
+    if (xpextedSd(t.right, t.left) < t.sd) 
+      if (DivRecurse(i, t.left))
+        if (DivRecurse(i, t.right))
+          return 1
   empty(t.left)
   empty(t.right)
+  return 0
+}
+function xpectedSd(i,j,    n) {
+   n = i.n + j.n
+   return i.n/n*i.sd + j.n/n*j.sd
 }
