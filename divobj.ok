@@ -63,7 +63,7 @@ function Div1(i,lst1,    lst2,j,n) {
 function DivRecurse(i, t,     j) {
   if (t.n < 2*i.min)        
     return 
-  if (t.all[n] - t.all[1] < i.epsilon) 
+  if (t.all[t.n] - t.all[1] < i.epsilon) 
     return 
   t.use = 1
   Node(t.left)
@@ -72,7 +72,7 @@ function DivRecurse(i, t,     j) {
     Node1(t.left,  t.all[++j])
   while(j < t.n)
     Node1(t.right, t.all[++j])
-  if (t.right.mu - t.left.mu >= i.epsilon) 
+  if (t.right.mu - t.left.mu >= i.epsilon)  
     if (xpectedSd(t.right, t.left) < t.sd)  {
       DivRecurse(i, t.left)
       DivRecurse(i, t.right)
