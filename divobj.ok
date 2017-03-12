@@ -19,7 +19,7 @@ function Node(i) {
   i.n  = i.mu = i.m2 = i.sd = 0 
   i.lo =  1e32
   i.hi = -1e32
-  i.use= 0
+  i.use= 0 # set to 1 if Node passes sanity checks
   has(i,"left")
   has(i,"right")
   has(i,"all")
@@ -60,18 +60,17 @@ function Div1(i,lst1,    lst2,j,n) {
   i.min     = length(lst2)**i.size
   DivRecurse(i, i.root)
 }
-function DivRecurse(i, t,     n,j,sd) {
-  n = length(t.all) 
-  if (n < 2*i.min)        
+function DivRecurse(i, t,     j) {
+  if (t.n < 2*i.min)        
     return 
   if (t.all[n] - t.all[1] < i.epsilon) 
     return 
   t.use = 1
   Node(t.left)
   Node(t.right) 
-  while(j < n/2)
+  while(j < t.n/2)
     Node1(t.left,  t.all[++j])
-  while(j < n)
+  while(j < t.n)
     Node1(t.right, t.all[++j])
   if (t.right.mu - t.left.mu >= i.epsilon) 
     if (xpectedSd(t.right, t.left) < t.sd)  {
