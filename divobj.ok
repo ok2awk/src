@@ -59,8 +59,7 @@ function Div1(i,lst1,    lst2,j,n) {
   i.min     = length(lst2)**i.size
   DivRecurse(i, i.root)
 }
-function DivRecurse(i, t,     mid,z,e,n,j,sd) {
-  z = 0.0000001
+function DivRecurse(i, t,     n,j,sd) {
   n = length(t.all) 
   if (n < i.min)        
     return

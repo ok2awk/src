@@ -12,7 +12,7 @@
 function _div(f,     n,i,lst) {
   n=2^16
 	while(n--)
-		lst[n] = int(100*rand()**0.5)
+		lst[n] = int(100*rand()**2)
 	Div(i)
 	i.cohen = 0.3
 	Div1(i, lst)
