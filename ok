@@ -5,31 +5,35 @@
 # Begin CONFIG
 # The follow defaults can be over-written by change the file ok.rc
 
-MyName="Omar Khayyam" # 11th century scholar
-MyEmail="omar@khayyam.persia"
-MySite="khayyam.info"
-MyLicense="'opensource.org/licenses/BSD-3-Clause"
-MyHeader="# /* vim: set filetype=sh ts=2 sw=2 sts=2  : */"
-  
-Awk=_var/awk # where to keep the generated awk files
-Lib=_var/lib # where to keep the generated awk files
-Tmp=_var/tmp # where to write temporaroes
-Docs=docs    # where to write the generated markdown files
+mkdir -p $HOME/.config/ok
+Config="$HOME/.config/ok/config"
 
-if [ -f "./ok.rc" ]; then
-  . ./ok.rc
+if [ ! -f "$Config" ]; then cat <<-EOF > "$Config"
+	MyName="Omar Khayyam" # 11th century scholar
+	MyEmail="omar@khayyam__persia"
+	MySite="ok2awk__github__io/info"
+	MyLicense="opensource__org/licenses/BSD-3-Clause"
+	MyHeader="# /* vim: set filetype=awk ts=2 sw=2 sts=2  : */"
+  
+	Awk="$HOME/opt/ok/awk"   # where to keep the generated awk files
+	Lib="$HOME/opt/ok/lib"   # where to keep the built awk apps
+	Tmp="$HOME/opt/ok/tmp"   # where to write temporaroes
+	Docs="$HOME/opt/ok/docs" # where to write Markdown files
+EOF
 fi
+
+. "$Config"
 
 # End CONFIG
 #######################################################################
 
 dirs() {
-  mkdir -p $Docs $Awk $Tmp $Lib
+  mkdir -p "$Awk" "$Lib" "$Tmp"  "$Docs" 
 }
 build() {
   f=${1%.*}
-	here=$PWD
-	cd $here/$Awk
+	here=${PWD}
+	cd "$Awk"
 	gawk '
 	BEGIN { print "#!'`which gawk`' -f "
 		      build("'$f'") 
@@ -48,8 +52,8 @@ build() {
 			  print str
 		}
 		close(g)
-	} ' >  $here/$Lib/$f
-	cd $here
+	} ' >  "$Lib/$f"
+	cd "$here"
 }
 makeawk() {
   echo "# $1 to _awk/" 1>&2
@@ -64,8 +68,8 @@ makeawk() {
                  $0)
     gsub(/__/,".",txt)
     print (In ? "" : "## ") txt
-  }
-  '
+  } 
+	'
 }
 makedoc() {
   echo "# $1 to docs/" 1>&2
@@ -86,11 +90,11 @@ makedoc() {
     }
     next
   }
-  Pre  { next }
+  Pre { next }
       { sub(/^#/,"")
        print }
-  END  { if (In) print "```\n" }
-  '
+	END  { if (In) print "```\n" }
+		'
 }
 vars() {
   if [ -f "$Tmp/awkvars.out" ]
@@ -143,11 +147,13 @@ fi
 }
 profile() {
   if [ -f "$Tmp/awkprof.out" ]; then
-    cat $Tmp/awkprof.out
+    cat "$Tmp/awkprof.out"
   fi
 }
 run() {
-  gawk --source 'BEGIN { '"$*"'}'
+  AWKPATH="$Awk:$AWKPATH" gawk '
+	   @include "ok"
+		 BEGIN { '"$*"'}'
 }
 tests() {
   for n in $*; do
@@ -163,17 +169,15 @@ tests() {
 }
 ready() {
   for ok1 in *.ok; do
-  	awk1=$Awk/${ok1%.*}.awk
-  	doc1=$Docs/${ok1%.*}.md
-	  if [ "$ok1" -nt "$awk1" ]; then makeawk $ok1 > $awk1; fi
-	  if [ "$ok1" -nt "$doc1" ]; then makedoc $ok1 > $doc1; fi
-         git add $Docs
-	git add $Docs/*
+  	awk1="$Awk/${ok1%.*}.awk"
+  	doc1="$Docs/${ok1%.*}.md"
+	  if [ "$ok1" -nt "$awk1" ]; then makeawk "$ok1" > "$awk1"; fi
+	  if [ "$ok1" -nt "$doc1" ]; then makedoc "$ok1" > "$doc1"; fi
   done
 }
 gitready() {
-  git config --global user.email $MyEmail
-  git config --global user.name  $MyName
+  git config --global user.email "$MyEmail"
+  git config --global user.name  "$MyName"
   git config --global credential.helper cache
   git config credential.helper 'cache --timeout=3600'
 }
@@ -187,7 +191,14 @@ new() {
   git commit -am newStuff
   git push origin master
 }
-
+fun() {
+	cat *[^1-9].ok |
+  gawk '$0 ~ /^function.*\<'$1'\>/ {
+	       print $0
+				 while ( (getline str) > 0 ) {
+					 print str
+					 if (str ~ /^}/) break}} ' $i
+}
 dirs
 ready
 
@@ -200,15 +211,16 @@ elif [ "$1" == "123"     ]; then tests 1 2 3;
 elif [ "$1" == "1234"    ]; then tests 1 2 3 4;
 elif [ "$1" == "file"    ]; then file $2;
 elif [ "$1" == "build"   ]; then build $2;
-elif [ "$1" == "do"      ]; then
+elif [ "$1" == "fun"     ]; then fun $2;
+elif [ "$1" == "run"      ]; then
   shift
   run "$*"
 elif [ -f "$Awk/$1.awk"  ]; then
   AWKPATH="$Awk:$AWKPATH" gawk          \
-       --dump-variables=$Tmp/awkvars.out \
-       --profile=$Tmp/awkprof.out         \
+       --dump-variables="$Tmp/awkvars.out" \
+       --profile="$Tmp/awkprof.out"         \
        -f $1.awk
   vars;
 else
-	echo "usage ./ok (new | old | profile | file)"
+	echo "usage ./ok (new | old | profile | file | 1234)"
 fi

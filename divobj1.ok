@@ -1,0 +1,24 @@
+# /* vim: set filetype=awk ts=2 sw=2 sts=2  : */
+
+"""
+
+## Testing Divobj
+
+"""
+
+@include "ok"
+@include "divobj"
+
+function _data(f,  i) {
+	Csv(i,"data/auto10__csv")
+	CsvRead(i)
+	is(f, 10, length(i.rows))
+	is(f, 15, i.rows[10][7])
+	is(f, 1,  2 in i.num)
+	is(f, 0,  1 in i.num)
+	is(f, 1,  7 in i.more)
+}
+
+BEGIN {
+	tests("_data")
+}

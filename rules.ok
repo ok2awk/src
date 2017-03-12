@@ -34,50 +34,75 @@ download whatever they want.
 
 If the AWK community cannot clean up its act and solve the package
 problem, it will never be taken seriously.  So in the following, I offer
-my rules for writing and sharing AWK packages.  Some of these rules need
-a little scripting support-- which I've coded up in a tool called `ok`
-(described below).
-
-To install `ok`, grab three files from github.com/ok2awk/src:
-
-- `ok`    : make this executable with `chmod +x ok`;
-- `ok.rc` : for setting config variables;
-- `ok.ok` : some standard functions.
-
-To use the tool, edit `ok.rc` (its commments will tell you what to do)
-then call it on a local source code file (without any extension):
-
-     ./ok file
+my rules for writing and sharing AWK packages.  
 
 Remember: its ok 2 awk!
 
-## Rule: Share Your Code on the Web
+## Managing AWK with `ok` 
 
-Code is useful to other people, but only if other people can access it.
-So my AWK makes extensive use of multi-line comments containing Markdown
+Some of my rules and tricks need a little scripting support-- which I've
+coded up in a Bash script called `ok` (described below).
+
+### Installing `ok`
+
+To install `ok`:
+
+```
+mkdir ok2awk
+cd ok2awk
+git clone https://github.com/ok2ak.src
+chmod +x src/ok
+mkdir -p $HOME/.config/ok
+touch $HOME/.config/ok/config
+```
+
+### Configure `ok`
+
+To configure `ok`, edit the file `$HOME/.config/ok/config`.
+Mine looks like this:
+
+
+```
+MyName="'Tim Menzies'"
+MyEmail="tim@menzies.us"
+# web site for on-line doco:
+MySite="ok2awk.github.io/info" 
+# url for license:
+MyLicense="opensource.org/licenses/BSD-3-Clause" 
+# tell your  editor how to ediot your source: 
+MyHeader="# /* vim: set filetype=awk ts=2 sw=2 sts=2  : */"
+
+Awk="$HOME/opt/ok/awk" # where to keep the generated awk files
+Lib="$HOME/opt/ok/lib" # where to keep the built awk apps
+Tmp="$HOME/opt/ok/tmp" # where to write temporaroes
+Docs="$HOME/opt/ok/docs"  # where to write Markdown files
+```
+
+### Testing `ok`
+
+If all this works, then this code should print "Hello world"
+
+     ./ok run 'helloWorld()'
+
+## Rule: Code Needs Comments
+
+My AWK makes extensive use of multi-line comments containing Markdown
 notes, spread around the code (these comments start and end with `===`
 at front of line).
 
-To make these web-readable, I work in a git directory with a `docs`
-sub-directory. Inside `docs` are `*.md` Markdown files auto-generated
-from my source code. After that, all the details of displaying on the web
-is handled by Github. In that tool, any repository `gitbub.com/org/repo`
-with a `docs` sub-directory produces web-accessible pretty-printed files
-at `org.github.io/repo`.
-
-Next, I write my code using the extension `*.ok`. The `ok` tool parses
+The `ok` script parses
 these files to generate the `*.md` files in `docs` and executable awk code
 (with all the Markdown commented out) in `*.awk` files. So the workflow
 looks like this:
 
 ```
-                    /---> docs/xx.md  
+                    /---> $Docs/xx.md  
 xx.ok ---> ok ---> /
                    \
-                    \---> _var/awk/xx.awk
+                    \---> $Awk/xx.awk
 ```
 
-Note that the pathnames shown above can be changed in the `ok.rc` file.
+Note that the pathnames shown above can be changed in the `ok/config` file.
 Note also that when AWK is called, it needs to be told about where to
 find the `*.awk` files.  So when the `ok` took runs code, it uses the
 following syntax (and `$Awk` and `$Tmp` are set from `ok.rc`):
@@ -92,9 +117,23 @@ AWKPATH="$Awk:$AWKPATH" gawk          \
 In the above, the `--dump-variables` and `--profile` flags are debugging
 tools, explained below.
 
-## Rule: Write Unit Tests
+## Rule: Code Needs to be Shared
 
-For every `xx.ok` file, I create a `xx1.ok` unit test file.  The
+Code is useful to other people, but only if other people can access it.
+To make my code publically accessible,  I run two repos:
+
+- `ok2awk/src`  : Contains most of my system. I accept pull requests to this repo.
+- `ok2awk/info` : Contains the generated Markdwon files. This one I manage
+                  on my own, updating whenever `src` is updated. This one 
+                  gets displayed as [ok2awk.github.io/src](https://ok2awk.github.io/src).
+
+## Rule: Shared Code Needs Tests
+
+One way groups can safely share code is to supply that code along with a test
+suite. Using those tests, teams can update and improve code while, at the same
+time, ensure that existing code still works.
+
+So for every `xx.ok` file, I create a `xx1.ok` unit test file.  The
 number ``1'' denotes test priority and the `ok` tool can be used
 to call just the tests with a particular priority. My tests are usually
 priority ``1'' but, if they are really slow to run, I give them a lower priority.
@@ -194,33 +233,32 @@ arrays can be initialized, I've written a function called `has `that:
 - Then deletes that key;
 - Thus leaving behind an empty list.
 
-"""
-function has(lst,key) { 
-  lst[key][1]
-  delete lst[key][1] }
-"""
+    function has(lst,key) { 
+      lst[key][1]
+      delete lst[key][1] 
+    }
 
 Nested intiailizations use a `fun` function that construct the recursive
 contents.
 
-"""
-function have(lst,key,fun) { 
-  has(lst,key)
-  @fun(lst[key]) }
-"""
+    function have(lst,key,fun) { 
+      has(lst,key)
+      @fun(lst[key]) 
+    }
 
 The `haves` function handles nested constructors with variable number
 of arguments:
 
-"""
-function haves(lst,key,fun,a,b,c,d) { 
-  has(lst,key)
-  if      (a=="") @fun(lst[key]) 
-  else if (b=="") @fun(lst[key],a) 
-  else if (c=="") @fun(lst[key],a,b) 
-  else  @fun(lst[key],a,b,c) 
-}
-"""
+    function haves(lst,key,fun,
+                   a,b,c,d,e) { 
+      has(lst,key)
+      if      (a=="") @fun(lst[key]) 
+      else if (b=="") @fun(lst[key],a) 
+      else if (c=="") @fun(lst[key],a,b) 
+      else if (d=="") @fun(lst[key],a,b,c) 
+      else if (e=="") @fun(lst[key],a,b,c,d) 
+      else            @fun(lst[key],a,b,c,d,e) 
+    }
 
 The next rule shows examples of using `has, have, haves`.
 
@@ -281,5 +319,4 @@ Use more functions
 
 """
 
-@include "ok"
 

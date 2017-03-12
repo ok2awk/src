@@ -1,0 +1,58 @@
+# /* vim: set filetype=awk ts=2 sw=2 sts=2  : */
+BEGIN {
+	OK.tips.author  = "'Tim Menzies'"
+  OK.tips.email   = "tim@menzies__us"
+  OK.tips.version = "0.1"
+  OK.tips.license = "'opensource__org/licenses/BSD-3-Clause"
+  OK.tips.more    = "ok2awk__github__io/src/csv"
+}
+"""
+
+## About Csv
+
+"""
+
+@include "ok"
+
+function Csv(i,name) {
+	i.file   = name
+  i.ignore = "-"
+  i.nump   = ":"
+  i.morep  = ">"
+  i.lessp  = "<"
+  i.sep    = ","
+	has(i,"rows")
+	has(i,"header")
+	has(i,"backer")
+	has(i,"num")
+  has(i,"less")
+  has(i,"more")
+}
+function CsvRead(i,    f,j,str,all,r,w,rw,cell,cells) {
+	while((getline str < i.file ) > 0) {
+    gsub(/[ \t\r]*/,"",str) # no whitespce
+    gsub(/#.*$/,"",str)     # no comments
+    if (!str)               # if anything left
+      continue
+    j++
+    all = split(str,cells,i.sep)
+    if (j == 1) {
+      for(r=1; r<=all; r++) {
+        cell = cells[r]
+        if (cell ~ i.ignore)  
+          continue
+        rw[ ++w ] = r
+        if      (cell ~ i.morep) i.more[w]
+        else if (cell ~ i.lessp) i.less[w]
+        else if (cell ~ i.nump)  i.num[w]
+        i.header[w] = cell
+        i.backer[ cell ] = w
+      }
+    } else {
+      for(w in rw) {
+        cell = cells[ rw[w] ]
+        if (w in i.num)  cell=cell*1.0
+        i.rows[j-1][w] = cell
+  }}}
+  close(i.file)
+}

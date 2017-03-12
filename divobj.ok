@@ -1,0 +1,68 @@
+# /* vim: set filetype=awk ts=2 sw=2 sts=2 et : */
+BEGIN {
+  OK.tips.author  = "'Tim Menzies'"
+  OK.tips.email   = "tim@menzies__us"
+  OK.tips.version = "0__1"
+  OK.tips.license = "'opensource__org/licenses/BSD-3-Clause"
+  OK.tips.more    = "ok2awk__github__io/src/divobj"
+}
+"""
+
+## About Divobj
+
+"""
+
+@include "ok"
+@include "csv"
+
+function Num(i) { 
+  i.n   = i.mu = i.m2 = i.sd = 0 
+  i.lo  =  1e32
+  i.hi  = -1e32
+  has(i,"left")
+  has(i,"right")
+  has(i,"all")
+}
+function Num1(i,v,          delta) {
+  v     = v+0
+  if (v < i.lo) i.lo = v
+  if (v > i.hi) i.hi = v
+  i.n  += 1
+  delta = v - i.mu
+  i.mu += delta/i.n
+  i.m2 += delta*(v-i.mu)
+  if (i.n > 1)
+	  i.sd = (i.m2/(i.n-1))^0.5
+  return v
+}
+function div(i,lst1) {
+  asort(lst1,lst2)
+  Num(i)
+  div1(i, lst2, length(lst2)**0.5 )
+  prune(i)
+}
+function div1(i,lst,max,   n,mid,j,k,sd) {
+  n = length(i.all) 
+  if (n < max) return
+  mid = int(n / 2)
+  Num(i.left)
+  Num(i.right) 
+  for(j=1; j<=n; j++) {
+    k = lst[j]
+    Num1(i,k)
+    if (j < mid) 
+      left[ ++length(left) ] = Num1(i.left,k)
+    else 
+      right[++length(fight)] = Num1(i.right,k)
+  }
+  if (i.left.hi < i.right.lo) 
+    if (i.left.mu / i.right.mu < 0.99) {
+      sd = i.left.n/i.n*i.left.sd + i.right.n/i.n*i.right.sd
+      if (sd/i.sd < 0.99)
+        div1(i.left,  left,  max)
+        div1(i.right, right, max)
+        return 
+  }
+  empty(i.left)
+  empty(i.right)
+}
