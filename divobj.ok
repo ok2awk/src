@@ -41,7 +41,7 @@ function div(i,lst1) {
   div1(i, lst2, length(lst2)**0.5 )
   prune(i)
 }
-function div1(i,lst,max,   n,mid,j,k,sd) {
+function div1(i,lst,max,   n,mid,j,k,sd1,nl,nr) {
   n = length(i.all) 
   if (n < max) return
   mid = int(n / 2)
@@ -51,14 +51,14 @@ function div1(i,lst,max,   n,mid,j,k,sd) {
     k = lst[j]
     Num1(i,k)
     if (j < mid) 
-      left[ ++length(left) ] = Num1(i.left,k)
+      left[  ++nl ] = Num1(i.left,k)
     else 
-      right[++length(fight)] = Num1(i.right,k)
+      right[ ++nr ] = Num1(i.right,k)
   }
   if (i.left.hi < i.right.lo) 
     if (i.left.mu / i.right.mu < 0.99) {
-      sd = i.left.n/i.n*i.left.sd + i.right.n/i.n*i.right.sd
-      if (sd/i.sd < 0.99)
+      sd1 = i.left.n/i.n*i.left.sd + i.right.n/i.n*i.right.sd
+      if (sd1 / i.sd < 0.99)
         div1(i.left,  left,  max)
         div1(i.right, right, max)
         return 
