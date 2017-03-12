@@ -19,12 +19,13 @@ function Node(i) {
   i.n  = i.mu = i.m2 = i.sd = 0 
   i.lo =  1e32
   i.hi = -1e32
+  i.use= 0
   has(i,"left")
   has(i,"right")
   has(i,"all")
 }
 function Node1(i,v,          delta) {
-  v     = v+0
+  v = v+0
   if (v < i.lo) i.lo = v
   if (v > i.hi) i.hi = v
   i.n  += 1
@@ -39,9 +40,9 @@ function Node1(i,v,          delta) {
 function Nodes(i,  lvl, q){
   q=", "
   print(lvl "[" i.lo q i.hi q i.n q i.sd "]")
-  if (length(i.left))
+  if (i.left.use)
     Nodes(i.left,lvl "|  ")
-  if (length(i.right))
+  if (i.right.use)
     Nodes(i.right,lvl "|  ")
 }
 function Div(i) {
@@ -62,25 +63,22 @@ function Div1(i,lst1,    lst2,j,n) {
 function DivRecurse(i, t,     n,j,sd) {
   n = length(t.all) 
   if (n < 2*i.min)        
-    return 0
+    return 
   if (t.all[n] - t.all[1] < i.epsilon) 
-    return 0
+    return 
+  t.use = 1
   Node(t.left)
   Node(t.right) 
   while(j < n/2)
     Node1(t.left,  t.all[++j])
   while(j < n)
     Node1(t.right, t.all[++j])
-  if (t.right.mu -  t.left.mu >= i.epsilon) 
-    if (xpextedSd(t.right, t.left) < t.sd) 
-      if (DivRecurse(i, t.left))
-        if (DivRecurse(i, t.right))
-          return 1
-  empty(t.left)
-  empty(t.right)
-  return 0
-}
+  if (t.right.mu - t.left.mu >= i.epsilon) 
+    if (xpectedSd(t.right, t.left) < t.sd)  {
+      DivRecurse(i, t.left)
+      DivRecurse(i, t.right)
+}}
 function xpectedSd(i,j,    n) {
-   n = i.n + j.n
-   return i.n/n*i.sd + j.n/n*j.sd
-}
+  n = i.n + j.n
+  return i.n/n*i.sd + j.n/n*j.sd
+} 

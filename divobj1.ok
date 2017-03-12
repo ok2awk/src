@@ -9,17 +9,26 @@
 @include "ok"
 @include "divobj"
 
-function _div(f,     n,i,lst) {
+function _div1(f,     n,i,lst) {
   n=2^16
 	while(n--)
 		lst[n] = int(100*rand()**2)
 	Div(i)
-	i.cohen = 0.3
+	i.cohen = 0.2
+	Div1(i, lst)
+	Nodes(i.root)
+}
+
+function _div2(f,     n,i,lst) {
+  n=2^8
+	while(n--)
+		lst[n] = int(100*rand())
+	Div(i)
 	Div1(i, lst)
 	Nodes(i.root)
 }
 
 BEGIN {
   srand(1)
-	tests("_div")
+	tests("_div1,_div2")
 }
