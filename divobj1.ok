@@ -10,11 +10,13 @@
 @include "divobj"
 
 function _div(f,     n,i,lst) {
-	n=128
+  n=2^16
 	while(n--)
-		lst[n] = rand()**0.5
-	div(i, lst)
-	Nums(i)
+		lst[n] = int(100*rand()**0.5)
+	Div(i)
+	i.cohen = 0.3
+	Div1(i, lst)
+	Nodes(i.root)
 }
 
 BEGIN {

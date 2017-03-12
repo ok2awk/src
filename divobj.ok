@@ -15,15 +15,7 @@ BEGIN {
 @include "ok"
 @include "csv"
 
-function Nums(i,  lvl, q){
-  q=","
-  print(lvl "[" int(i.lo*100) q int(i.hi*100) q int(i.sd*100) "]")
-  if (length(i.left))
-    Nums(i.left,lvl "|  ")
-  if (length(i.right))
-    Nums(i.right,lvl "|  ")
-}
-function Num(i) { 
+function Node(i) { 
   i.n  = i.mu = i.m2 = i.sd = 0 
   i.lo =  1e32
   i.hi = -1e32
@@ -31,7 +23,7 @@ function Num(i) {
   has(i,"right")
   has(i,"all")
 }
-function Num1(i,v,          delta) {
+function Node1(i,v,          delta) {
   v     = v+0
   if (v < i.lo) i.lo = v
   if (v > i.hi) i.hi = v
@@ -44,30 +36,49 @@ function Num1(i,v,          delta) {
 	  i.sd = (i.m2/(i.n-1))^0.5
   return v
 }
-function div(i,lst1,lst2,n,d) {
-  asort(lst1,lst2)
-  Num(i)
-  for(n in lst2) Num1(i,lst2[n])
-  d = i.sd*0.2
-  div1(i, lst2, d,length(lst2)**0.5 )
+function Nodes(i,  lvl, q){
+  q=", "
+  print(lvl "[" i.lo q i.hi q i.n q i.sd "]")
+  if (length(i.left))
+    Nodes(i.left,lvl "|  ")
+  if (length(i.right))
+    Nodes(i.right,lvl "|  ")
 }
-function div1(i,lst,d,min,     e,n,j,sd) {
-  e=0.0000001
-  n = length(lst) 
-  if (n < min)                  return
-  if (lst[n]/(lst[1]+e) < 0.99) return 
-  if ((lst[n] - lst[1]) < d)    return
-  Num(i.left)
-  Num(i.right) 
-  for(j=1  ; j<int(n/2); j++) Num1(i.left,  lst[j])
-  for(j=j+1; j<=n;       j++) Num1(i.right, lst[j])
-  if (i.left.mu / (i.right.mu+e) < 0.99) {
-    sd = i.left.n/n*i.left.sd + i.right.n/n*i.right.sd
-    if (sd / (i.sd+1) < 0.99) {
-      div1(i.left,  i.left.all,  d, min)
-      div1(i.right, i.right.all, d, min) 
+function Div(i) {
+  i.cohen  = 0.2
+  i.size   = 0.5
+  i.min    = 20
+  i.epsilon= 0
+  have(i,"root","Node")
+}
+function Div1(i,lst1,    lst2,j,n) {
+  n=asort(lst1,lst2)
+  for(j=1;j<=n;j++)
+    Node1(i.root, lst2[j])
+  i.epsilon = i.root.sd*i.cohen
+  i.min     = length(lst2)**i.size
+  DivRecurse(i, i.root)
+}
+function DivRecurse(i, t,     mid,z,e,n,j,sd) {
+  z = 0.0000001
+  n = length(t.all) 
+  if (n < i.min)        
+    return
+  if (t.all[n] - t.all[1] < i.epsilon) 
+    return
+  Node(t.left)
+  Node(t.right) 
+  while(j < n/2)
+    Node1(t.left,  t.all[++j])
+  while(j < n)
+    Node1(t.right, t.all[++j])
+  if ( t.right.mu -  t.left.mu >= i.epsilon) {
+    sd = t.left.n/n*t.left.sd + t.right.n/n*t.right.sd
+    if (sd < t.sd) {
+      DivRecurse(i, t.left)
+      DivRecurse(i, t.right)
       return
   }}
-  empty(i.left)
-  empty(i.right)
+  empty(t.left)
+  empty(t.right)
 }
