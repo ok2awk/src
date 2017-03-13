@@ -1,0 +1,27 @@
+# /* vim: set filetype=awk ts=2 sw=2 sts=2 : */
+BEGIN{
+	OK.tips.author  = "'Tim Menzies'"
+  OK.tips.email   = "tim@menzies__us"
+  OK.tips.version = "0__1"
+  OK.tips.license = "opensource__org/licenses/BSD-3-Clause"
+  OK.tips.more    = "ok2awk__github__io/src/cdom"
+}
+"""
+
+## About Cdom
+
+"""
+
+@include "ok"
+
+function cdom(xs,ys,ws,lo,hi,
+							n,i,x,y,sum1,sum2)  { # ws[-1,1,1] min,max,max 
+	n = length(xs)
+	for(i in xs) {
+		x = (xs[i] - lo[i] ) / (hi[i] - lo[i] + 1e-32)
+		y = (ys[i] - lo[i] ) / (hi[i] - lo[i] + 1e-32)
+		sum1 -= 2.71828^( ws[i]*(x - y)/n )
+		sum2 -= 2.71828^( ws[i]*(y - x)/n )
+	}
+	return sum1/n < sum2/n
+}

@@ -1,0 +1,29 @@
+# /* vim: set filetype=awk ts=2 sw=2 sts=2 : */
+
+"""
+
+## Testing Cdom
+
+"""
+
+@include "ok"
+@include "cdom"
+
+function _cdom0(f,str1,str2,want,  lst1,lst2,ws,lo,hi) {
+	split(str1, lst1,",")
+	split(str2, lst2,",")
+	split("10,10",hi,",")
+	split("0,0",   lo,",")
+	split("-1,1",  ws,",")
+	is(f,want, cdom(lst1,lst2,ws,lo,hi))
+
+}
+function _cdom1(f) { _cdom0(f, "0,5",     "5,0",   1) }
+function _cdom2(f) { _cdom0(f, "5,0",     "0,5",   0) }
+function _cdom3(f) { _cdom0(f, "0,4",     "5,5",   1) }
+function _cdom4(f) { _cdom0(f, "2.5,5",   "5,2.5", 1) }
+function _cdom5(f) { _cdom0(f, "2.5,2.5", "5,5",   0) }
+
+BEGIN {
+  tests("_cdom1,_cdom2,_cdom3,_cdom4,_cdom5")
+}

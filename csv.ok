@@ -21,12 +21,12 @@ function Csv(i,name) {
   i.morep  = ">"
   i.lessp  = "<"
   i.sep    = ","
-	has(i,"rows")
-	has(i,"header")
-	has(i,"backer")
-	has(i,"num")
-  has(i,"less")
-  has(i,"more")
+	has(i,  "rows")
+	has(i,  "header")
+	has(i,  "backer")
+	has(i,  "num")
+  has(i,  "less")
+  has(i,  "more")
 }
 function CsvRead(i,    f,j,str,all,r,w,rw,cell,cells) {
 	while((getline str < i.file ) > 0) {

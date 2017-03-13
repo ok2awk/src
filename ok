@@ -97,11 +97,9 @@ makedoc() {
 		'
 }
 vars() {
-  if [ -f "$Tmp/awkvars.out" ]
-  then
-    egrep -v '[A-Z][A-Z]' $Tmp/awkvars.out |
-    sed 's/^/W> rogue local: /'
-  fi
+  [ -f "$Tmp/awkvars.out" ] && gawk '
+		/[A-Z][A-Z]/ {next}
+		{print "W> rogue local: ",$0}' $Tmp/awkvars.out
 }
 file() {
   if [ -z "$1" ]; then
@@ -111,11 +109,13 @@ file() {
   else
     cat<<-EOF > $1.ok
 $MyHeader
-OK.tips.author  = "$MyName"
-OK.tips.email   = "$MyEmail"
-OK.tips.version = "0.1"
-OK.tips.license = "$MyLicense"
-OK.tips.more    = "$MySite/$1"
+BEGIN {
+  OK.tips.author  = "$MyName"
+  OK.tips.email   = "$MyEmail"
+  OK.tips.version = "0.1"
+  OK.tips.license = "$MyLicense"
+  OK.tips.more    = "$MySite/$1"
+}
 
 """
 
@@ -219,7 +219,7 @@ elif [ -f "$Awk/$1.awk"  ]; then
   AWKPATH="$Awk:$AWKPATH" gawk          \
        --dump-variables="$Tmp/awkvars.out" \
        --profile="$Tmp/awkprof.out"         \
-       -f $1.awk
+       -f $1.awk 
   vars;
 else
 	echo "usage ./ok (new | old | profile | file | 1234)"
