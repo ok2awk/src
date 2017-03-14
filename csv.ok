@@ -14,45 +14,96 @@ BEGIN {
 
 @include "ok"
 
+function Row(i) {
+	i.id = id()
+	has(i,  "raw")
+	has(i,  "cooked")
+	i.cdoms=0
+}
+function Range(i) {
+	i.lo =  1e32
+	i.hi = -1e32
+}
+function Range1(i,v) {
+	v += 0
+	if (v < i.lo) i.lo = v
+	if (v > i.hi) i.hi = v
+	return v
+}
 function Csv(i,name) {
 	i.file   = name
-  i.ignore = "-"
-  i.nump   = ":"
-  i.morep  = ">"
-  i.lessp  = "<"
   i.sep    = ","
+  i.ignore = "-"
+  i.klassc = "/"; has(i, "klass")
+  i.numc   = ":"; has(i, "num")
+  i.morec  = ">"; has(i, "more")
+  i.lessc  = "<"; has(i, "less")
+	has(i,  "weight")
+  has(i,  "range")
 	has(i,  "rows")
 	has(i,  "header")
 	has(i,  "backer")
-	has(i,  "num")
-  has(i,  "less")
-  has(i,  "more")
 }
 function CsvRead(i,    f,j,str,all,r,w,rw,cell,cells) {
 	while((getline str < i.file ) > 0) {
-    gsub(/[ \t\r]*/,"",str) # no whitespce
+    gsub(/[ \t\r]*/,"",str) # no whitespce:
     gsub(/#.*$/,"",str)     # no comments
     if (!str)               # if anything left
       continue
-    j++
     all = split(str,cells,i.sep)
-    if (j == 1) {
+    if ( j++ == 0 ) {
       for(r=1; r<=all; r++) {
         cell = cells[r]
         if (cell ~ i.ignore)  
           continue
         rw[ ++w ] = r
-        if      (cell ~ i.morep) i.more[w]
-        else if (cell ~ i.lessp) i.less[w]
-        else if (cell ~ i.nump)  i.num[w]
         i.header[w] = cell
         i.backer[ cell ] = w
+				if      (cell ~ i.morec)  i.more[w] 
+        else if (cell ~ i.lessc)  i.less[w] 
+        else if (cell ~ i.numc)   i.num[w]
+        else if (cell ~ i.klassc) i.klass[w]
+				# -------------------------------------------------
+				if      (cell ~ i.morec)  i.weight[w] =  1
+				else if (cell ~ i.lessc)  i.weight[w] = -1
+				# -------------------------------------------------
+				if      (cell ~ i.morec)  have(i.range, w, "Range")
+        else if (cell ~ i.lessc)  have(i.range, w, "Range") 
+        else if (cell ~ i.numc)   have(i.range, w, "Range")
       }
-    } else {
+			} else {
+		  have(i.rows, j, "Row")
       for(w in rw) {
         cell = cells[ rw[w] ]
-        if (w in i.num)  cell=cell*1.0
-        i.rows[j-1][w] = cell
-  }}}
+				if(w in i.range) 
+					cell = Range1(i.range[w], cell)
+        i.rows[j].raw[w] = cell
+	}}}
   close(i.file)
+}
+function CsvCdom(i,r1,r2, 
+							   n,x0,y0,lo,hi,x,y,sum1,sum2)  { 
+	n = length(i.weight)
+	for(w in i.weight) {
+		x0 = i.rows[r1].raw[w]
+		y0 = i.rows[r2].raw[w]
+		lo = i.range[w].lo
+		hi = i.range[w].hi
+		x  = (x0 - lo ) / (hi - lo + 1e-32)
+		y  = (y0 - lo ) / (hi - lo + 1e-32)
+		sum1 -= 2.71828^( i.weight[w]*(x - y)/n )
+		sum2 -= 2.71828^( i.weight[w]*(y - x)/n )
+	}
+	return sum1/n < sum2/n
+} 
+function cmp_x(a,b,c,d) {
+	return b.x + 0 > d.x + 0
+}
+function CsvSort(i,x,y,all,    r,tmp) {
+	for(r in i.rows) {
+		tmp[r].x = i.rows[r].raw[x]
+		tmp[r].y = i.rows[r].cdoms
+		tmp[r].z = i.rows[r].id
+ }
+ asort(tmp,all,"cmp_x")
 }

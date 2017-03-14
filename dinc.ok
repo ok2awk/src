@@ -1,0 +1,19 @@
+# /* vim: set filetype=awk ts=2 sw=2 sts=2 : */
+BEGIN {
+  OK.tips.author  = "'Tim Menzies'"
+  OK.tips.email   = "tim@menzies.us"
+  OK.tips.version = "0.1"
+  OK.tips.license = "opensource__org/licenses/BSD-3-Clause"
+  OK.tips.more    = "ok2awk__github__io/src/dinc"
+}
+
+"""
+
+## About Dinc
+
+"""
+
+@include "ok"
+
+
+

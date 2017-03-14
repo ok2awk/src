@@ -9,7 +9,11 @@ Standard background stuff.
 """
 
 BEGIN { FS=OFS="," }
-
+BEGIN { OK.id = 0  }
+function id(   tmp) {
+  tmp = OK.id = OK.id + 1
+  return tmp
+}
 function helloWorld() {
   print "Hello world!"
 }

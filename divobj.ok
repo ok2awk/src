@@ -81,36 +81,4 @@ function xpectedSd(i,j,    n) {
   n = i.n + j.n
   return i.n/n*i.sd + j.n/n*j.sd
 }
-function cdom(xs,ys,ws,lo,hi,
-							n,i,x,y,sum1,sum2)  { # ws[-1,1,1] min,max,max 
-	n = length(xs)
-	for(i in xs) {
-		x = (xs[i] - lo[i] ) / (hi[i] - lo[i] + 1e-32)
-		y = (ys[i] - lo[i] ) / (hi[i] - lo[i] + 1e-32)
-		sum1 -= 2.71828^( ws[i]*(x - y)/n )
-		sum2 -= 2.71828^( ws[i]*(y - x)/n )
-	}
-	return sum1/n < sum2/n
-} 
-# need min max
-#function divobj(f,  csv) {
-#  Csv(csv,f)
-#  CsvRead(csv)
-#  for(w in csv.i.more) ws[w]=  1
-#  for(w in csv.i.less) ws[w]= -1
-#  for(r1 in i.rows) { 
-#    for(w in ws)
-#      obj1[ w ] = csv.rows[r1][w]
-#    for(r2 in i.rows) 
-#      divobj1(csv,r1,r2,ws, obj1)
-#      
-#   
-#  }
-#}
-#function divobj1(csv,r1,r2,ws, obj1, obj2) {
-#  for(w in ws) 
-#    obj2[ w ] = csv.rows[r2][w]
-#  cdom(obj1, obj2, ws) 
-#
-#
-#}
+
