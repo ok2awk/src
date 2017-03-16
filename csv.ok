@@ -66,8 +66,6 @@ function CsvRead(i,    f,j,str,all,r,w,rw,cell,cells) {
 				# -------------------------------------------------
 				if      (cell ~ i.morec)  i.weight[w] =  1
 				else if (cell ~ i.lessc)  i.weight[w] = -1
-				print(cell,cell ~i.morec)
-				print(cell,cell ~i.lessc)
 				# -------------------------------------------------
 				if      (cell ~ i.morec)  have(i.range, w, "Range")
         else if (cell ~ i.lessc)  have(i.range, w, "Range") 
