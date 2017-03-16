@@ -66,12 +66,14 @@ function CsvRead(i,    f,j,str,all,r,w,rw,cell,cells) {
 				# -------------------------------------------------
 				if      (cell ~ i.morec)  i.weight[w] =  1
 				else if (cell ~ i.lessc)  i.weight[w] = -1
+				print(cell,cell ~i.morec)
+				print(cell,cell ~i.lessc)
 				# -------------------------------------------------
 				if      (cell ~ i.morec)  have(i.range, w, "Range")
         else if (cell ~ i.lessc)  have(i.range, w, "Range") 
         else if (cell ~ i.numc)   have(i.range, w, "Range")
       }
-			} else {
+	 } else {
 		  have(i.rows, j, "Row")
       for(w in rw) {
         cell = cells[ rw[w] ]
@@ -82,28 +84,35 @@ function CsvRead(i,    f,j,str,all,r,w,rw,cell,cells) {
   close(i.file)
 }
 function CsvCdom(i,r1,r2, 
-							   n,x0,y0,lo,hi,x,y,sum1,sum2)  { 
+							   w,n,x0,y0,lo,hi,x,y,sum1,sum2,ww)  { 
 	n = length(i.weight)
 	for(w in i.weight) {
-		x0 = i.rows[r1].raw[w]
-		y0 = i.rows[r2].raw[w]
+		ww = i.weigth[w]
 		lo = i.range[w].lo
 		hi = i.range[w].hi
-		x  = (x0 - lo ) / (hi - lo + 1e-32)
-		y  = (y0 - lo ) / (hi - lo + 1e-32)
-		sum1 -= 2.71828^( i.weight[w]*(x - y)/n )
-		sum2 -= 2.71828^( i.weight[w]*(y - x)/n )
+		 x = (i.rows[r1].raw[w] - lo ) / (hi - lo + 1e-32)
+		 y = (i.rows[r2].raw[w] - lo ) / (hi - lo + 1e-32)
+		sum1 -= 2.71828 ^ ( ww * (x - y)/n )
+		sum2 -= 2.71828 ^ ( ww * (y - x)/n )
+		#print(w,ww,lo,hi,x,y)
 	}
+	#print sum1,n,sum2,n
 	return sum1/n < sum2/n
 } 
-function cmp_x(a,b,c,d) {
-	return b.x + 0 > d.x + 0
+function cmp_cdoms(a,b,c,d) {
+	return b.cdoms + 0 > d.cdoms + 0
 }
-function CsvSort(i,x,y,all,    r,tmp) {
-	for(r in i.rows) {
-		tmp[r].x = i.rows[r].raw[x]
-		tmp[r].y = i.rows[r].cdoms
-		tmp[r].z = i.rows[r].id
- }
- asort(tmp,all,"cmp_x")
+function CsvSort(i,   sum,r1,r2,tmp) {
+	for(r1 in i.rows) {
+		for(r2 in i.rows)
+		  if (r1 > r2)  {
+			  if (CsvCdom(i,r1,r2)) 
+				  i.rows[r1].cdoms++
+		   }
+	  sum += i.rows[r1].cdoms
+  }
+	print sum
+  for(r1 in i.rows) 
+		i.rows[r1].cdoms /= sum
+  asort(i.rows,"cmp_cdoms")
 }

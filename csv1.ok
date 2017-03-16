@@ -9,12 +9,15 @@
 @include "ok"
 @include "csv"
 
-function _data(f,  i,j,all,k) {
-	Csv(i,"data/weather2__csv")
+function _data1(f,file,  i) {
+	Csv(i,file)
+	o(i.weight,"w")
 	CsvRead(i)
-	CsvSort(i,2,"cdoms",all)
-	for(k in all) 
-		print all[k].x, all[k].y, all[k].z
+	CsvSort(i)
+  o(i.rows,"r")
+}
+function _data(f) {
+	_data1(f, "data/auto10__csv") 
 }
 
 BEGIN {
