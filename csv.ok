@@ -113,18 +113,42 @@ function TableSort(i,   sum,r1,r2,tmp,a) {
 				  i.rows[r1].cdoms++
   asort(i.rows,i.rows,"cmp_cdoms")
 }
-function Node(i) { 
-  i.use=   0 # set to 1 if Node passes sanity checks
-  has(i,  "left")
-  has(i,  "right")
-  has(i,  "all")
-	have(i, "x", "Num")
-	have(i, "y", "Num")
+function Node(i,tiny,xepsilon,yepsilon) { 
+  i.use    =   0 # set to 1 if Node passes sanity checks
+	i.sanity =  1.01
+  has(i,   "left")
+  has(i,   "right")
+  has(i,   "rows")
+	haves(i, "x","Num",xepsilon,tiny)
+	haves(i, "y","Num",yepsilon,tiny)
+}
+function Node1(i,x,y,r) {
+	i.rows[ length(i.rows) + 1 ] = r
+	Num1(i.x,x)
+	Num1(i.y,y)
+}
+function NodeTrivial(i) {
+	return NumTrivial(i.x) || NumTrivial(i.y)
+}
+function NodeUseful(i) {
+	 n1 = i.left.y.n
+  sd1 = i.left,y.sd
+	 n2 = i.right.y.n
+  sd2 = i.right.y.sd
+	  n = i.y.n
+   sd = i.y.sd 
+  return sd > i.sanity*( n1/n*sd1 + n2/n*sd2 )
 }
 function Num(i) { 
   i.n  = i.mu = i.m2 = i.sd = 0 
   i.lo =  1e32
   i.hi = -1e32
+	has(i, "sample")
+}
+function NumTrivial(i) {
+	if (i.n < 2*i.tiny)          return 1
+	if (i.hi - i.lo < i.epsilon) return 1
+	return 0
 }
 function Num1(i,v,          delta) {
   v = v+0
@@ -137,7 +161,24 @@ function Num1(i,v,          delta) {
   i.m2 += delta*(v-i.mu)
   if (i.n > 1)
 	  i.sd = (i.m2/(i.n-1))^0.5
+	Sample1(i,sample,v)
   return v
+}
+function NumMedian(i) {
+	return median(i.sample.all)
+}
+function Sample(i,     most) {
+  i.most = most ? most : 64 # keep up to 64 items
+  has(i,"all")              # i.all holds the kept value
+  i.n=0
+}
+function Sample1(i,v,    m) {
+  i.n++
+  m = length(i.all)
+  if (m < i.most)   # the cache is not full, add something
+    i.all[ m+1 ] = v
+  else if (rand() < m/i.n)   # else, sometimes, add "v"
+    i.all[ int(len*rand()) + 1 ] = v
 }
 function Nodes(i,  lvl, q){
   q=", "
@@ -147,41 +188,42 @@ function Nodes(i,  lvl, q){
   if (i.right.use)
     Nodes(i.right,lvl "|  ")
 }
-function Div(i) {
-  i.cohen  = 0.2
-  i.size   = 0.5
-  i.min    = 20
-  i.epsilon= 0
+function Div(i,col) {
+  i.cohen = 0.2
+  i.size  = 0.5
+	i.col   = col
   have(i,"root","Node")
 }
-function Div1(i,lst1,    lst2,j,n) {
-  n=asort(lst1,lst2)
-  for(j=1;j<=n;j++)
-    Node1(i.root, lst2[j])
-  i.epsilon = i.root.sd*i.cohen
-  i.min     = length(lst2)**i.size
-  DivRecurse(i, i.root)
+function Div1(i,t,  r) {
+	Node(i.root)
+  for(r in t.rows) 
+		Node1(i.root,
+					t.rows[r].raw[i.col],
+					t.rows[r].cdom,
+	        r)
+  DivRecurse(i,
+						 t.rows,
+						 i.root, 
+             length(t.rows) ^ i.size, # tiny
+             i.root.x.sd * i.cohen,   # xepsilon
+             i.root.y.sd * i.cohen)   # yepsilon
 }
-function DivRecurse(i, t,     j) {
-  if (t.n < 2*i.min)        
-    return 
-  if (t.all[t.n] - t.all[1] < i.epsilon) 
-    return 
-  t.use = 1
-  Node(t.left)
-  Node(t.right) 
-  while(j < t.n/2)
-    Node1(t.left,  t.all[++j])
-  while(j < t.n)
-    Node1(t.right, t.all[++j])
-  if (t.right.mu - t.left.mu >= i.epsilon)  
-    if (xpectedSd(t.right, t.left) < t.sd)  {
-      DivRecurse(i, t.left)
-      DivRecurse(i, t.right)
+# How to score 
+# the 
+function DivRecurse(i,rows,here,tiny,xep,yep,     r) {
+	if (NodeTrivial(here))
+		return
+  here.use = 1
+  Node(here.left,  tiny,xep,yep)
+  Node(here.right, tiny,xep,yep)
+	c   = i.col
+	mid = NumMedian( here.x )
+  for(r in here.all) 
+	  if (val < mid)
+			Node1(here.left,  rows[r].raw[c], rows[r].cdoms, r)
+		else
+			Node1(here.right, rows[r].raw[c], rows[r].cdoms, r)
+  if (NodeUseful(here)) {
+    DivRecurse(i, rows, here.left,  tiny,xep,yep) 
+    DivRecurse(i, rows, here.right, tiny,xep,yep)
 }}
-function xpectedSd(i,j,    n) {
-  n = i.n + j.n
-  return i.n/n*i.sd + j.n/n*j.sd
-}
-
-

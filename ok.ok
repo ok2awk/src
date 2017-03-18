@@ -64,15 +64,15 @@ function isnum(x) {
 }
 
 function median(lst,
-                n,p,q,lst1) {
-  n = asort(lst,lst1)
+                n,p,q) {
+  n = asort(lst)
   p = q = int(n/2+0.5)
   if (n <= 3) { 
     p = 1; q = n
   } else 
     if (!(n % 2) )
       q = p + 1;
-  return p==q ? lst1[p] : (lst1[p]+lst1[q])/2
+  return p==q ? lst[p] : (lst[p]+lst[q])/2
 }
 """
 
