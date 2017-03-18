@@ -9,17 +9,21 @@
 @include "ok"
 @include "csv"
 
-function _data1(f,file,  i) {
-	Csv(i,file)
+function _data0(f,file,  i) {
+	Table(i,file)
 	o(i.weight,"w")
-	CsvRead(i)
-	CsvSort(i)
-  o(i.rows,"r")
+	csv2Table(i)
+	TableSort(i)
+  o(i.rows)
 }
-function _data(f) {
-	_data1(f, "data/auto10__csv") 
+function _data1(f) {
+	_data0(f, "data/auto10__csv") 
+}
+function _data2(f) {
+	_data0(f, "data/auto__csv") 
 }
 
 BEGIN {
-	tests("_data")
+	OFS=", "
+	tests("_data1")
 }

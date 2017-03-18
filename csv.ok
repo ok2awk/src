@@ -24,13 +24,16 @@ function Range(i) {
 	i.lo =  1e32
 	i.hi = -1e32
 }
+function Range01(i,v) {
+  return (v - i.lo ) / (i.hi - i.lo + 1e-32)
+}
 function Range1(i,v) {
 	v += 0
 	if (v < i.lo) i.lo = v
 	if (v > i.hi) i.hi = v
 	return v
 }
-function Csv(i,name) {
+function Table(i,name) {
 	i.file   = name
   i.sep    = ","
   i.ignore = "-"
@@ -43,74 +46,142 @@ function Csv(i,name) {
 	has(i,  "rows")
 	has(i,  "header")
 	has(i,  "backer")
+	has(i,  "rw")
 }
-function CsvRead(i,    f,j,str,all,r,w,rw,cell,cells) {
+function csv2Table(i,    str,cells) {
 	while((getline str < i.file ) > 0) {
     gsub(/[ \t\r]*/,"",str) # no whitespce:
     gsub(/#.*$/,"",str)     # no comments
-    if (!str)               # if anything left
-      continue
-    all = split(str,cells,i.sep)
-    if ( j++ == 0 ) {
-      for(r=1; r<=all; r++) {
-        cell = cells[r]
-        if (cell ~ i.ignore)  
-          continue
-        rw[ ++w ] = r
-        i.header[w] = cell
-        i.backer[ cell ] = w
-				if      (cell ~ i.morec)  i.more[w] 
-        else if (cell ~ i.lessc)  i.less[w] 
-        else if (cell ~ i.numc)   i.num[w]
-        else if (cell ~ i.klassc) i.klass[w]
-				# -------------------------------------------------
-				if      (cell ~ i.morec)  i.weight[w] =  1
-				else if (cell ~ i.lessc)  i.weight[w] = -1
-				# -------------------------------------------------
-				if      (cell ~ i.morec)  have(i.range, w, "Range")
-        else if (cell ~ i.lessc)  have(i.range, w, "Range") 
-        else if (cell ~ i.numc)   have(i.range, w, "Range")
-      }
-	 } else {
-		  have(i.rows, j, "Row")
-      for(w in rw) {
-        cell = cells[ rw[w] ]
-				if(w in i.range) 
-					cell = Range1(i.range[w], cell)
-        i.rows[j].raw[w] = cell
-	}}}
+    if (str)  {             # if anything left
+      split(str,cells,i.sep)
+		  if (length(i.header))
+				TableRow(i,cells) 
+			else
+				TableHeader(i,cells)
+	}}
   close(i.file)
 }
-function CsvCdom(i,r1,r2, 
-							   w,n,x0,y0,lo,hi,x,y,sum1,sum2,ww)  { 
+function TableHeader(i,headers,    head,all,r,w) {
+	all=length(headers)
+  for(r=1; r<=all; r++) {
+    head = headers[r]
+    if (head ~ i.ignore)  
+      continue
+    i.rw[ ++w ] = r
+    i.header[w] = head
+    i.backer[ head ] = w
+    if (head ~ i.klassc)     i.klass[w]
+		else if (head ~ i.morec) i.more[w] 
+		else if (head ~ i.lessc) i.less[w] 
+		else if (head ~ i.numc)  i.num[w]
+		# ---------------------------------------------
+		if (w in i.more) i.weight[w] =  1
+	  if (w in i.less) i.weight[w] = -1
+		if (w in i.more) have(i.range, w, "Range")
+    if (w in i.less) have(i.range, w, "Range") 
+    if (w in i.num)  have(i.range, w, "Range")
+}}
+function TableRow(i,values,    j,w,value) {
+	j = length(i.rows) + 1
+	have(i.rows, j, "Row")
+  for(w in i.rw) {
+    value = values[ i.rw[w] ]
+	  if(w in i.range) 
+			value = Range1(i.range[w], value)
+    i.rows[j].raw[w] = value
+}}
+function TableCdom(i,r1,r2, 
+                 n,w,x,y,sum1,sum2,e) {
+  e = 2.71828
 	n = length(i.weight)
 	for(w in i.weight) {
-		ww = i.weigth[w]
-		lo = i.range[w].lo
-		hi = i.range[w].hi
-		 x = (i.rows[r1].raw[w] - lo ) / (hi - lo + 1e-32)
-		 y = (i.rows[r2].raw[w] - lo ) / (hi - lo + 1e-32)
-		sum1 -= 2.71828 ^ ( ww * (x - y)/n )
-		sum2 -= 2.71828 ^ ( ww * (y - x)/n )
-		#print(w,ww,lo,hi,x,y)
+		   x  = Range01(i.range[w], i.rows[r1].raw[w])
+		   y  = Range01(i.range[w], i.rows[r2].raw[w])
+		sum1 -= e ^ ( i.weight[w] * (x - y)/n )
+		sum2 -= e ^ ( i.weight[w] * (y - x)/n )
 	}
-	#print sum1,n,sum2,n
 	return sum1/n < sum2/n
 } 
 function cmp_cdoms(a,b,c,d) {
-	return b.cdoms + 0 > d.cdoms + 0
+	return b.cdoms + 0 < d.cdoms + 0
 }
-function CsvSort(i,   sum,r1,r2,tmp) {
-	for(r1 in i.rows) {
-		for(r2 in i.rows)
-		  if (r1 > r2)  {
-			  if (CsvCdom(i,r1,r2)) 
+function TableSort(i,   sum,r1,r2,tmp,a) {
+	for(r1 in i.rows)  
+		for(r2 in i.rows) 
+		  if (r1 > r2)  
+			  if (TableCdom(i,r1,r2))  
 				  i.rows[r1].cdoms++
-		   }
-	  sum += i.rows[r1].cdoms
-  }
-	print sum
-  for(r1 in i.rows) 
-		i.rows[r1].cdoms /= sum
-  asort(i.rows,"cmp_cdoms")
+  asort(i.rows,i.rows,"cmp_cdoms")
 }
+function Node(i) { 
+  i.use=   0 # set to 1 if Node passes sanity checks
+  has(i,  "left")
+  has(i,  "right")
+  has(i,  "all")
+	have(i, "x", "Num")
+	have(i, "y", "Num")
+}
+function Num(i) { 
+  i.n  = i.mu = i.m2 = i.sd = 0 
+  i.lo =  1e32
+  i.hi = -1e32
+}
+function Num1(i,v,          delta) {
+  v = v+0
+  if (v < i.lo) i.lo = v
+  if (v > i.hi) i.hi = v
+  i.n  += 1
+  i.all[i.n] = v
+  delta = v - i.mu
+  i.mu += delta/i.n
+  i.m2 += delta*(v-i.mu)
+  if (i.n > 1)
+	  i.sd = (i.m2/(i.n-1))^0.5
+  return v
+}
+function Nodes(i,  lvl, q){
+  q=", "
+  print(lvl "[" i.num.lo q i.num.hi q i.num.n q i.num.sd "]")
+  if (i.left.use)
+    Nodes(i.left,lvl "|  ")
+  if (i.right.use)
+    Nodes(i.right,lvl "|  ")
+}
+function Div(i) {
+  i.cohen  = 0.2
+  i.size   = 0.5
+  i.min    = 20
+  i.epsilon= 0
+  have(i,"root","Node")
+}
+function Div1(i,lst1,    lst2,j,n) {
+  n=asort(lst1,lst2)
+  for(j=1;j<=n;j++)
+    Node1(i.root, lst2[j])
+  i.epsilon = i.root.sd*i.cohen
+  i.min     = length(lst2)**i.size
+  DivRecurse(i, i.root)
+}
+function DivRecurse(i, t,     j) {
+  if (t.n < 2*i.min)        
+    return 
+  if (t.all[t.n] - t.all[1] < i.epsilon) 
+    return 
+  t.use = 1
+  Node(t.left)
+  Node(t.right) 
+  while(j < t.n/2)
+    Node1(t.left,  t.all[++j])
+  while(j < t.n)
+    Node1(t.right, t.all[++j])
+  if (t.right.mu - t.left.mu >= i.epsilon)  
+    if (xpectedSd(t.right, t.left) < t.sd)  {
+      DivRecurse(i, t.left)
+      DivRecurse(i, t.right)
+}}
+function xpectedSd(i,j,    n) {
+  n = i.n + j.n
+  return i.n/n*i.sd + j.n/n*j.sd
+}
+
+
