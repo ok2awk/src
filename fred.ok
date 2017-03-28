@@ -1,10 +1,10 @@
-rr
-OK.tips.author  = "'Tim Menzies'"
-OK.tips.email   = "awk@att.com"
-OK.tips.version = "0.1"
-OK.tips.license = "'opensource.org/licenses/BSD-3-Clause"
-OK.tips.more    = "ok2awk.github.io/src/fred"
-     
+BEGIN {
+  OK.tips.author  = "'Tim Menzies'"
+  OK.tips.email   = "awk@att__com"
+  OK.tips.version = "0__1"
+  OK.tips.license = "'opensource__org/licenses/BSD-3-Clause"
+  OK.tips.more    = "ok2awk__github__io/src/fred"
+}     
 """
 
 ## About Fred

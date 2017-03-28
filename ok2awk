@@ -5,8 +5,8 @@
 # Begin CONFIG
 # The follow defaults can be over-written by change the file ok.rc
 
-mkdir -p "$HOME/.config/ok"
-Config="$HOME/.config/ok/config"
+mkdir -p "$HOME/.config/ok2awk"
+Config="$HOME/.config/ok2awk/config"
 
 if [ ! -f "$Config" ]; then cat <<-EOF > "$Config"
 	MyName="Omar Khayyam" # 11th century scholar
@@ -15,10 +15,10 @@ if [ ! -f "$Config" ]; then cat <<-EOF > "$Config"
 	MyLicense="opensource__org/licenses/BSD-3-Clause"
 	MyHeader="# /* vim: set filetype=awk ts=2 sw=2 sts=2  : */"
   
-	Awk="$HOME/opt/ok/awk"   # where to keep the generated awk files
-	Lib="$HOME/opt/ok/lib"   # where to keep the built awk apps
-	Tmp="$HOME/opt/ok/tmp"   # where to write temporaroes
-	Docs="$HOME/opt/ok/docs" # where to write Markdown files
+	Awk="$HOME/opt/ok2awk/awk"   # where to keep the generated awk files
+	Lib="$HOME/opt/ok2awk/lib"   # where to keep the built awk apps
+	Tmp="$HOME/opt/ok2awk/tmp"   # where to write temporaroes
+	Docs="$HOME/opt/ok2awk/docs" # where to write Markdown files
 EOF
 fi
 
@@ -56,7 +56,7 @@ build() {
 	cd "$here"
 }
 makeawk() {
-  echo "# $1 to _awk/" 1>&2
+  echo "# $1 to awk/" 1>&2
   cat $1 | gawk '
   BEGIN {In = 1}
   gsub(/^"""/,"") {
@@ -161,7 +161,7 @@ tests() {
       f=${i%.*}
       echo ""
       echo "### --- $f -------------"
-      ./ok $f
+      ./ok2awk $f
     done | tee $Tmp/test$n.out
     echo -n "PASSED "; grep -c PASSED $Tmp/test$n.out
     echo -n "FAILED "; grep -c FAILED $Tmp/test$n.out
@@ -222,5 +222,5 @@ elif [ -f "$Awk/$1.awk"  ]; then
        -f $1.awk 
   vars;
 else
-	echo "usage ./ok (new | old | profile | file | 1234)"
+	echo "usage ./ok2awk (new | old | profile | file | 1234)"
 fi
