@@ -36,18 +36,20 @@ function has(lst,key) {
 }
 function have(lst,key,fun) { 
   has(lst,key)
-  @fun(lst[key]) 
+  if (fun)
+    @fun(lst[key]) 
 }
 function haves(lst,key,fun,
                a,b,c,d,e) { 
   has(lst,key)
-  if      (a=="") @fun(lst[key]) 
-  else if (b=="") @fun(lst[key],a) 
-  else if (c=="") @fun(lst[key],a,b) 
-  else if (d=="") @fun(lst[key],a,b,c) 
-  else if (e=="") @fun(lst[key],a,b,c,d) 
-  else            @fun(lst[key],a,b,c,d,e) 
-}
+  if (fun) {
+    if      (a=="") @fun(lst[key]) 
+    else if (b=="") @fun(lst[key],a) 
+    else if (c=="") @fun(lst[key],a,b) 
+    else if (d=="") @fun(lst[key],a,b,c) 
+    else if (e=="") @fun(lst[key],a,b,c,d) 
+    else            @fun(lst[key],a,b,c,d,e) 
+}}
 function lt(a,b) { return a < b }
 function gt(a,b) { return a > b }
 function abs(x)  { return x < 0 ? -1*x : x }
