@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # /* vim: set filetype=sh ts=2 sw=2 sts=2  : */
 
 #######################################################################
 # Begin CONFIG
 # The follow defaults can be over-written by change the file ok.rc
 
-mkdir -p $HOME/.config/ok
+mkdir -p "$HOME/.config/ok"
 Config="$HOME/.config/ok/config"
 
 if [ ! -f "$Config" ]; then cat <<-EOF > "$Config"
