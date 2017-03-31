@@ -1,0 +1,77 @@
+# /* vim: set filetype=awk ts=2 sw=2 sts=2  : */
+BEGIN {
+  OK.tips.author  = "Omar Khayyam"
+  OK.tips.email   = "omar@khayyam__persia"
+  OK.tips.version = "0.1"
+  OK.tips.license = "opensource__org/licenses/BSD-3-Clause"
+  OK.tips.more    = "ok2awk__github__io/info/stats"
+}
+
+"""
+
+## About Stats
+
+"""
+
+@include "ok"
+
+function Hist(i,bins, char, width) {
+	has(i,"all"}
+	i.bins = bins
+	i.lo   = 1e32
+	i.hi   = -1e32
+	i.char = char=="" ? "*" : char
+	i.width= width=="" ? 50 : width
+}
+function Hist1(i,x) {
+	if (x < i,lo) i.lo=x
+	if (x > i,hi) i.hi=x
+	push(i.all,x)
+}
+function Histshow(i) {
+	maxb= -1e32
+	for(j=1; j<=i.bins; j++) 
+		i.all[j]=0
+	gap = (i.hi - i.lo)/i.bins
+	for(j in i.all)  {
+		bin = int(0.5 + (i.all[j] - i.lo)/gap)
+		#xxx does bin= i.bins?
+		i.all[bin]++
+		if (i.all[bin] > maxb) maxb=i.all[bin]
+  }
+	shrink = maxb > i.width ? i.width/maxb : 1
+  for(j=1; j<=i.bins; j++)
+    print 
+}
+function Normal(i, mu,sd) {
+	i.mu= mu == "" ? 0 : 1
+	i.sd= sd == "" ? 0 : 1
+}
+function Normal1(i) {
+  return i.mu + i.sd * NormalZ()
+}
+function NormalZ(i,      w,x1,x2) {
+   w=1;
+   while (w >= 1) {
+     x1= 2.0 * rand() - 1;
+     x2= 2.0 * rand() - 1;
+     w = x1*x1 + x2*x2
+   };
+   w = sqrt((-2.0 * log(w))/w);
+   return x1 * w;
+}
+function gammaLn(xx,
+								 cdf,y,x,tmp,ser,j) {
+	cdf[1]=  76.18009172947146
+	cdf[2]= -86.50532032941677
+	cdf[3]=  24.01409824083091
+	cdf[4]=  -1.231739572450155
+	cdf[5]=	 0.1208650973866179e-2
+	cdf[6]=  -0.5395239384953e-5
+  y=x=xx
+  tmp=x+5.5
+  tmp -= (x+0.5)*log(tmp)
+  ser=1.000000000190015
+  for (j=1;j<=6;j++) ser += cdf[j]/++y
+  return -tmp + log(2.5066282746310005*ser/x)
+}
