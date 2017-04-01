@@ -15,41 +15,32 @@ BEGIN {
 
 @include "oklib"
 
-function Hist(i,bins, char, width) {
-	has(i,"all")
-	i.lo   =  1e32
-	i.hi   = -1e32
-	i.bins = bins  == "" ? 10  : bins
-	i.char = char  == "" ? "*" : char
-	i.width= width == "" ? 50  : width
-	i.fmt  = "%8.4f : %s %i\n"
+function Hist(i,lo,hi,width) {
+	has(i,"bins")
+	i.width = width
+  i.lo    = lo
+  i.hi    = hi
+	i.max   = 50
+	i.fmt   = "%8.4f : %s %i\n"
+	i.char  = "*"
+	i._maxb = 0
 }
-function Hist1(i,x) {
-	if (x < i.lo) i.lo=x
-	if (x > i.hi) i.hi=x
-	push(i.all,x)
+function Hist1(i,x, b) {
+	if(x == i.hi)
+	  x -= 1e-32
+	b= int((x - i.lo)/(i.hi - i.lo + 1e-32)/i.width)
+	if (++i.bins[b] > i._maxb)
+	  i._maxb=i.bins[b]
 }
-# specify the y-axis
-function Histshow(i,   lst,gap, n,maxb,j,bin,shrink) {
-	maxb= -1e32
-	for(j=1; j<=i.bins; j++) 
-		lst[j]=0
-	gap = (i.hi - i.lo)/i.bins
-	for(j in i.all)  {
-		bin = 1+int((i.all[j] - i.lo)/gap)
-	  if (bin > i.bins) 
-			bin--
-		lst[bin]++
-		if (lst[bin] > maxb) 
-			maxb=lst[bin]
-  }
-	shrink = maxb > i.width ? i.width/maxb : 1
-  for(j=1; j<=i.bins; j++)  {
+function Histshow(i,   scale,nbins,b) {
+	scale = i._maxb > i.max ? i.max/i._maxb : 1
+	nbins = (i.hi - i.lo)/i.width
+	for(b=0; b< nbins; b++) 
     printf("> " i.fmt, 
-					 i.lo+((j-1)+0.5)*gap, 
-					 chars(lst[j] * shrink, i.char), 
-					 lst[j]) 
-}}
+					 i.lo + b*i.width,
+					 chars(i.bins[b] * scale, i.char), 
+					 i.bins[b])
+}
 function Normal(i, mu,sd) {
 	i.mu= mu == "" ? 0 : mu
 	i.sd= sd == "" ? 1 : sd
