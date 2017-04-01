@@ -141,8 +141,8 @@ priority ``1'' but, if they are really slow to run, I give them a lower priority
 
 The header of a  test file contains:
 
-      @include "xx" # i.e. load the code file
-      @include "ok" # i.e. load the test suite functions from ok.ok
+      @include "xx"    # i.e. load the code file
+      @include "oklib" # i.e. load the test suite functions from ok.ok
 
 This is followed by test functions. Each of these functions accepts an
 string that tells the function its own name; and prints out test results

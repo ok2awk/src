@@ -7,7 +7,7 @@
 
 """
 
-@include "ok"
+@include "oklib"
 @include "rules"
 
 function _ltgt(f) {

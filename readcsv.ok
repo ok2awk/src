@@ -6,7 +6,7 @@
 
 """
 
-@include "lib"
+@include "oklib"
 @include "table"
 
 function readcsv(f,t,   str,a,n) {

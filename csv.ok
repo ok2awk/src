@@ -12,7 +12,7 @@ BEGIN {
 
 """
 
-@include "ok"
+@include "oklib"
 
 function Row(i) {
 	i.id = id()

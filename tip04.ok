@@ -8,7 +8,7 @@ For all my files `xx.ok`, I add a test suite `xxok.ok`
 whose first line is
 
 ```
-@include "ok"
+@include "oklib"
 @include "xx"
 ```
 

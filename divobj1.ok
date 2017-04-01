@@ -6,7 +6,7 @@
 
 """
 
-@include "ok"
+@include "oklib"
 @include "divobj"
 
 function _div1(f,     n,i,lst) {

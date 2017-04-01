@@ -6,13 +6,36 @@
 
 """
 
-@include "ok"
+@include "oklib"
 @include "stats"
 
-function _norm(x, n) {
-	Normal(n,10,1)
-
+function _rand(f, m,h,n,lst,j,s) {
+	print("")
+	Hist(h)
+	h.width=30
+	m=10000
+	while(m-- > 0) {
+		lst[m] = int(10*rand()^0.5)
+		Hist1(h, lst[m])
+	}
+  n = asort(lst)
+  for(j=1;j<=n;j++)
+    s=s " " lst[j]
+	print s
+	print "!!",lst[int(n/2)]
+	Histshow(h)
+}
+function _norm(f, n,m,h) {
+	print("")
+	Normal(n,10,2)
+	Hist(h)
+	h.bins = 10
+	h.width= 50
+	m=1000
+	while(m-- > 0)
+		Hist1(h, Normal1(n))	
+	Histshow(h)
 }
 BEGIN {
-  tests("")
+  tests("_rand,_norm")
 }
