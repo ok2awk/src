@@ -1,0 +1,30 @@
+# /* vim: set filetype=awk ts=2 sw=2 sts=2  : */
+BEGIN {
+  OK.tips.author  = "Omar Khayyam"
+  OK.tips.email   = "omar@khayyam__persia"
+  OK.tips.version = "0.1"
+  OK.tips.license = "opensource__org/licenses/BSD-3-Clause"
+  OK.tips.more    = "ok2awk__github__io/tiles"
+}
+
+"""
+
+## About Tiles
+
+"""
+
+@include "oklib"
+
+function 
+function xtiles(all,    i,j,lo,hi) {
+	lo =  1e31
+	hi = -1e31
+	for (i in all)
+		for(j in all[i]) 
+			if (j > 1) {
+			  v = all[i][j]
+			  if (v < lo) v = lo
+			  if (v > hi) v = hi
+	}
+	return x
+
