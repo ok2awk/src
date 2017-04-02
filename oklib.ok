@@ -51,6 +51,9 @@ function haves(lst,key,fun,
     else if (e=="") @fun(lst[key],a,b,c,d) 
     else            @fun(lst[key],a,b,c,d,e) 
 }}
+function or(x,y) {
+  return x=="" ? y : x
+}
 function lt(a,b) { return a < b }
 function gt(a,b) { return a > b }
 function abs(x)  { return x < 0 ? -1*x : x }
