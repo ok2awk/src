@@ -15,34 +15,6 @@ BEGIN {
 
 @include "oklib"
 
-function Hist(i,lo,hi,bins) {
-	has(i,"_data")
-	i.bins  = bins
-  i.lo    = lo
-  i.hi    = hi
-	i.fmt   = "%8.1f : %s"
-	i.char  = "*"
-	i._maxb = 0
-	i.max   = 50
-}
-function Hist1(i,x,    b,n) {
-	if(x == i.hi)
-	  x -= 1e-32
-	b = int(i.bins*(x - i.lo)/(i.hi - i.lo + 1e-32))
-	n = ++i._data[b]
-	if (n >  i._maxb)
-	  i._maxb=n
-}
-function Histshow(i,   scale,gap,b,n,show) {
-	scale = i._maxb > i.max ? i.max/i._maxb : 1
-	gap = (i.hi - i.lo)/i.bins
-	for(b=0; b< i.bins; b++) { 
-		n = i._data[b]
-		show = n > 0 ? n : ""
-    printf(i.fmt " " show "\n", 
-					 i.lo + b*gap,
-					 chars(n * scale, i.char))
-}}
 function Normal(i, mu,sd) {
 	i.mu= mu == "" ? 0 : mu
 	i.sd= sd == "" ? 1 : sd
@@ -76,14 +48,12 @@ function normal(mu,sd,i) {
 	Normal(i,mu,sd)
 	return Nomral1(i)
 }
-function any(all) {
-	return all[ int(length(all)*rand()) + 1 ] 
-}
-function dist3(all,   x,y,z) {
-	x= any(all)
-	y= any(all)
-	z= any(all)
-	return x + (z - y)
+function any2(all,   n,i) {
+	n = length(all)
+	i = int(n*rand()) + 1  
+	if (i==n)
+		i--
+	return all[i] + rand()*(all[i+1]-all[i])
 }
 function triangle(a,c,b,   u) {
 	u = rand()
@@ -92,3 +62,32 @@ function triangle(a,c,b,   u) {
 	else
 		return b - ((1-u)*(b-a)*(b-c))^0.5
 }
+function Hist(i,lo,hi,bins) {
+	has(i,"_data")
+	i.bins  = bins
+  i.lo    = lo
+  i.hi    = hi
+	i.fmt   = "%8.1f : %s"
+	i.char  = "*"
+	i._maxb = 0
+	i.max   = 50
+}
+function Hist1(i,x,    b,n) {
+	if(x == i.hi)
+	  x -= 1e-32
+	b = int(i.bins*(x - i.lo)/(i.hi - i.lo + 1e-32))
+	n = ++i._data[b]
+	if (n >  i._maxb)
+	  i._maxb=n
+}
+function Histshow(i,   scale,gap,b,n,show) {
+	scale = i._maxb > i.max ? i.max/i._maxb : 1
+	gap = (i.hi - i.lo)/i.bins
+	for(b=0; b< i.bins; b++) { 
+		n = i._data[b]
+		show = n > 0 ? n : ""
+    printf(i.fmt " " show "\n", 
+					 i.lo + b*gap,
+					 chars(n * scale, i.char))
+}}
+

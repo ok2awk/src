@@ -28,11 +28,11 @@ function _beta(f,  r,h) {
 }
 function _dist3(f,  r,h,lst) {
 	print("")
-	Hist(h,0,100,20)
-	r=1000
-	split("1,2,3,8,11,14,20,26,32",lst,",")
+	Hist(h,0,16,8)
+	r=10000
+	split("1,1,1,2,4,8,8,8,8,16",lst,",")
 	while(r-- > 0)
-		Hist1(h, dist3(lst))
+		Hist1(h, any2(lst))
 	Histshow(h)
 }
 function _tri(f,  r,h,lst) {
