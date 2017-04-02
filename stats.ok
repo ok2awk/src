@@ -76,4 +76,19 @@ function normal(mu,sd,i) {
 	Normal(i,mu,sd)
 	return Nomral1(i)
 }
-
+function any(all) {
+	return all[ int(length(all)*rand()) + 1 ] 
+}
+function dist3(all,   x,y,z) {
+	x= any(all)
+	y= any(all)
+	z= any(all)
+	return x + (z - y)
+}
+function triangle(a,c,b,   u) {
+	u = rand()
+	if (u < (c-a)/(b-a))
+		return a + (    u*(b-a)*(c-a))^0.5
+	else
+		return b - ((1-u)*(b-a)*(b-c))^0.5
+}
