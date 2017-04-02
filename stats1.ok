@@ -9,28 +9,23 @@
 @include "oklib"
 @include "stats"
 
-function _rand(f, m,h,n,lst,j,s) {
-	print("")
-	Hist(h,0,1,0.1)
-	m=10000
-	while(m-- > 0) 
-		Hist1(h, rand()^2)
-  n = asort(lst)
-  for(j=1;j<=n;j++)
-    s=s " " lst[j]
-	print s
-	print "!!",lst[int(n/2)]
-	Histshow(h)
-}
 function _norm(f, n,m,h) {
 	print("")
 	Normal(n,10,1)
-	Hist(h,0,20,2)
+	Hist(h,5,15,10)
 	m=1000
 	while(m-- > 0)
 		Hist1(h, Normal1(n))	
 	Histshow(h)
 }
+function _beta(f,  r,h) {
+	print("")
+	Hist(h,0,1,10)
+	r=1000
+	while(r-- > 0)
+		Hist1(h, beta80())
+	Histshow(h)
+}
 BEGIN {
-  tests("_rand,_norm")
+  tests("_norm,_beta")
 }

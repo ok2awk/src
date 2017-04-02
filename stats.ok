@@ -15,32 +15,34 @@ BEGIN {
 
 @include "oklib"
 
-function Hist(i,lo,hi,width) {
-	has(i,"bins")
-	i.width = width
+function Hist(i,lo,hi,bins) {
+	has(i,"_data")
+	i.bins  = bins
   i.lo    = lo
   i.hi    = hi
-	i.max   = 50
-	i.fmt   = "%8.4f : %s %i\n"
+	i.fmt   = "%8.1f : %s"
 	i.char  = "*"
 	i._maxb = 0
+	i.max   = 50
 }
-function Hist1(i,x, b) {
+function Hist1(i,x,    b,n) {
 	if(x == i.hi)
 	  x -= 1e-32
-	b= int((x - i.lo)/(i.hi - i.lo + 1e-32)/i.width)
-	if (++i.bins[b] > i._maxb)
-	  i._maxb=i.bins[b]
+	b = int(i.bins*(x - i.lo)/(i.hi - i.lo + 1e-32))
+	n = ++i._data[b]
+	if (n >  i._maxb)
+	  i._maxb=n
 }
-function Histshow(i,   scale,nbins,b) {
+function Histshow(i,   scale,gap,b,n,show) {
 	scale = i._maxb > i.max ? i.max/i._maxb : 1
-	nbins = (i.hi - i.lo)/i.width
-	for(b=0; b< nbins; b++) 
-    printf("> " i.fmt, 
-					 i.lo + b*i.width,
-					 chars(i.bins[b] * scale, i.char), 
-					 i.bins[b])
-}
+	gap = (i.hi - i.lo)/i.bins
+	for(b=0; b< i.bins; b++) { 
+		n = i._data[b]
+		show = n > 0 ? n : ""
+    printf(i.fmt " " show "\n", 
+					 i.lo + b*gap,
+					 chars(n * scale, i.char))
+}}
 function Normal(i, mu,sd) {
 	i.mu= mu == "" ? 0 : mu
 	i.sd= sd == "" ? 1 : sd
@@ -58,18 +60,20 @@ function NormalZ(i,      w,x1,x2) {
   w = sqrt((-2.0 * log(w))/w)
   return x1 * w;
 }
-function gammaLn(xx,
-								 cdf,y,x,tmp,ser,j) {
-	cdf[1]=  76.18009172947146
-	cdf[2]= -86.50532032941677
-	cdf[3]=  24.01409824083091
-	cdf[4]=  -1.231739572450155
-	cdf[5]=	 0.1208650973866179e-2
-	cdf[6]=  -0.5395239384953e-5
-  y=x=xx
-  tmp=x+5.5
-  tmp -= (x+0.5)*log(tmp)
-  ser=1.000000000190015
-  for (j=1;j<=6;j++) ser += cdf[j]/++y
-  return -tmp + log(2.5066282746310005*ser/x)
+function beta10() { return 1 - beta90() }
+function beta20() { return 1 - beta80() }
+function beta25() { return 1 - beta75() }
+function beta33() { return 1 - beta67() }
+function beta40() { return 1 - beta60() }
+function beta50() { return rand()       }
+function beta60() { return rand()^0.67  }
+function beta67() { return rand()^0.5   }
+function beta75() { return rand()^0.33  }
+function beta80() { return rand()^0.25  }
+function beta90() { return rand()^(1/9) }
+
+function normal(mu,sd,i) {
+	Normal(i,mu,sd)
+	return Nomral1(i)
 }
+
