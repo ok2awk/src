@@ -7,11 +7,21 @@
 """
 
 @include "oklib"
-@include "tiles"
+@include "rx"
 
-function _xtiles(f) {
+function _xtiles(f, i1,i2,i3,i4,r0,r,lst1,lst2,lst3,lst4) {
+	r0=100
+	empty(lst1)
+	empty(lst2)
+	empty(lst3)
+	empty(lst4)
+	r=r0; while(r-- > 0) push(lst1,0.5*rand())
+	r=r0; while(r-- > 0) push(lst2,0.5*rand()^2)
+	r=r0; while(r-- > 0) push(lst3,2+rand())
+	r=r0; while(r-- > 0) push(lst4,2+rand()^2)
+	Rx(i1,lst1,"lst1")
 }
 BEGIN {
-  tests("")
+  tests("_xtiles")
 }
 

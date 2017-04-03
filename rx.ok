@@ -40,8 +40,8 @@ function rxsReport(rxlist,    j,k,lo,hi) {
 	lo =  1e31
 	hi = -1e31
 	for(j in rxlist) {
-		if (rxlist[j].lo < lo) lo = v
-		if (rxlist[j].hi > hi) hi = v
+		if (rxlist[j].lo < lo) lo = rxlist[j].lo
+		if (rxlist[j].hi > hi) hi = rxlist[j].hi
 	}
 	for(j in rxlist)
 		RxReport(rxlist[j],lo,hi)
