@@ -17,13 +17,13 @@ BEGIN {
 
 function Rx(i,all,txt,n,w,
 							m,q,k) {
-  i.txt   = or(txt, "rx" int(1000*rand()))
-	i.width = or(w,50) 
-	i.n     = or(n,5)
+  i.txt   = either(txt, "rx" int(1000*rand()))
+	i.width = either(w,50) 
+	i.n     = either(n,5)
 	i.report= ""
-	has(i, "chars")
+	has(i, "slots")
 	for(k=1; k<=i.width; k++)
-		chars[k] = " "
+		i.slots[k] = " "
 	has(i, "data")
 	copy(all, i.data)
 	m   = asort(i.data)
@@ -36,35 +36,35 @@ function Rx(i,all,txt,n,w,
 	i.tiles[k+1] = i.hi
 	i.tiles[0]   = i.lo
 }
-function rxsReport(rxs,    j,k,lo,hi) {
+function rxsReport(rxlist,    j,k,lo,hi) {
 	lo =  1e31
 	hi = -1e31
-	for(j in rxs) {
-		if (rxs[j].lo < lo) lo = v
-		if (rxs[j].hi > hi) hi = v
+	for(j in rxlist) {
+		if (rxlist[j].lo < lo) lo = v
+		if (rxlist[j].hi > hi) hi = v
 	}
-	for(j in rxs)
-		RxReport(rxs[j],lo,hi)
+	for(j in rxlist)
+		RxReport(rxlist[j],lo,hi)
 }
-function RxReport(rx,lo,hi,   k) {
-	lo = or(lo, rx.lo)
-	hi = or(hi, rx.hi)
-  if (rx.n == 5) { 
-		RxDash(rx,1,2,lo,hi,"-")
-		RxDash(rx,4,5,lo,hi,"-") 
+function RxReport(i,lo,hi,   k) {
+	lo = either(lo, i.lo)
+	hi = either(hi, i.hi)
+  if (i.n == 5) { 
+		RxMark(i,1,2,lo,hi,"-")
+		RxMark(i,4,5,lo,hi,"-") 
 	} else 
-		RxDash(t,1,3,lo,hi,"-");
-  rx.chars[ int(rx.width/2) ] = "*"	  
-	for(k=1; k<=rx.width; k++) 
-		rx.report = rx.report rx.chars[k]
-	rx.report = "|" rx.report "|"
-	return rx.report
+		RxMark(i,1,3,lo,hi,"-");
+  i.slots[ int(i.width/2) ] = "*"	  
+	for(k=1; k<=i.width; k++) 
+		i.report = i.report i.slots[k]
+	i.report = "|" i.report "|"
+	return i.report
 }
-function RxDash(rx,x,y,lo,hi,q) {
-	x= rx.tiles[x]
-	y= rx.tiles[y]
-	x= int(rx.width*(x-lo)/(hi - lo + 1e-32))
-	y= int(rx.width*(y-lo)/(hi - lo + 1e-32))
-  for(x=x; x<=y; x++)
-		rx.chars[x] = q
+function RxMark(i,x,y,lo,hi,q) {
+	x= i.tiles[x]
+	y= i.tiles[y]
+	x= int(i.width*(x-lo)/(hi - lo + 1e-32))
+	y= int(i.width*(y-lo)/(hi - lo + 1e-32))
+  while(x <= y)
+		i.slots[x++] = q
 }
