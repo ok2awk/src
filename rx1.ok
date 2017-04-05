@@ -9,14 +9,14 @@
 @include "oklib"
 @include "rx"
 
-function _xtiles(f,       r,prep,k,r,lst) {
+function _xtiles(f,       pre,k,r,r0,rxs,lst) {
 	r0     = 100
 	pre[1] = 0.5
 	pre[2] = 2
 	pre[3] = 1
 	pre[4] = 2
 	for(k in pre) {
-		haves(rxs, k, Rx, "rx" k)
+		haves(rxs, k, "Rx", "rx" k)
 		r=r0
 		empty(lst)
 		while(r-- > 0)
