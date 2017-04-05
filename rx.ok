@@ -15,23 +15,26 @@ BEGIN {
 
 @include "oklib"
 
-function Rx(i,all,txt,n,w,
-							m,q,k) {
-  i.txt   = either(txt, "rx" int(1000*rand()))
-	i.width = either(w,50) 
-	i.n     = either(n,5)
+function Rx(i,txt,fours) {
+	i.txt   = either(txt, "rx" int(1000*rand()))
+	i.n     = fours ? 4 : 5
+	i.width = 50
+	i.txt   = txt
+	i.f     = "%5.2f"
+}
+function Rx1(i,all,        m,q,k) {
 	i.report= ""
 	has(i, "slots")
-	for(k=1; k<=i.width; k++)
-		i.slots[k] = " "
 	has(i, "data")
-	copy(all, i.data)
-	m   = asort(i.data)
-	i.lo= i.data[0]
-	i.hi= i.data[m]
-	q   = int(m/i.n)
 	has(i, "tiles")
-	for(k=1; k<=i.n; k++)
+	for(k=1; k<=i.width; k++) 
+		i.slots[k] = " "
+	copy(all, i.data)
+	m    = asort(i.data)
+	i.lo = i.data[0]
+	i.hi = i.data[m]
+	q    = int(m/i.n)
+	for(k=1; k<=i.n; k++) 
 		i.tiles[k] = i.data[k*q] 
 	i.tiles[k+1] = i.hi
 	i.tiles[0]   = i.lo
@@ -44,7 +47,13 @@ function rxsReport(rxlist,    j,k,lo,hi) {
 		if (rxlist[j].hi > hi) hi = rxlist[j].hi
 	}
 	for(j in rxlist)
-		RxReport(rxlist[j],lo,hi)
+		RxReport(rxlist[j],lo,hi) " " RxNums(i)
+}
+function RxNums(i,   s,k) {
+	s = printf(i.f ", ", i.tiles[0])
+	for(k=1; k<=i.n; k++)
+		s = s printf(i.f ", ", i.tiles[k])
+	return s  printf(i.f ", ", i.tiles[k+1])
 }
 function RxReport(i,lo,hi,   k) {
 	lo = either(lo, i.lo)
