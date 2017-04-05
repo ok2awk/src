@@ -47,13 +47,13 @@ function rxsReport(rxlist,    j,k,lo,hi) {
 		if (rxlist[j].hi > hi) hi = rxlist[j].hi
 	}
 	for(j in rxlist)
-		RxReport(rxlist[j],lo,hi) " " RxNums(i)
+		RxReport(rxlist[j],lo,hi) " " RxNums(j)
 }
 function RxNums(i,   s,k) {
 	s = printf(i.f ", ", i.tiles[0])
 	for(k=1; k<=i.n; k++)
-		s = s printf(i.f ", ", i.tiles[k])
-	return s  printf(i.f ", ", i.tiles[k+1])
+		s = printf(s i.f ", ", i.tiles[k])
+	return printf(s i.f ", ", i.tiles[k+1])
 }
 function RxReport(i,lo,hi,   k) {
 	lo = either(lo, i.lo)
