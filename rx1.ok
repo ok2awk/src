@@ -15,11 +15,11 @@ function _xtiles(f) {
 	_xtiles1(f,1)
 }
 function _xtiles1(f,fours,       pre,k,r,r0,rxs,lst) {
-	r0     = 100
-	pre[1] = 0.1
-	pre[2] = 10
+	r0     = 1000
+	pre[1] = 0.2
+	pre[2] = 5
 	pre[3] = 1
-	pre[4] = 10
+	pre[4] = 5
 	for(k in pre) {
 		haves(rxs, k, "Rx", "rx" k,fours)
 		r=r0
