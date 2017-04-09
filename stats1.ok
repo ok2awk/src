@@ -18,7 +18,7 @@ function _norm(f, n,r,h) {
 		Hist1(h, Normal1(n))	
 	Histshow(h)
 }
-function _beta(f,  r,h) {
+function _beta1(f,  r,h) {
 	print("")
 	Hist(h,0,1,10)
 	r=1000
@@ -43,6 +43,38 @@ function _tri(f,  r,h,lst) {
 		Hist1(h,  triangle(20,30,70))
 	Histshow(h)
 }
+function _cliffs1(f,   d,r,lst1,lst2,i,j) {
+	for(d=1; d<=1; d += 0.1) {
+		r = 1000
+	  empty(lst1)
+	  empty(lst2)
+	  while(r-- > 0) {
+		  lst1[r] = int(100*rand())
+		  lst2[r] = int(100*d*rand())
+    }
+		Cliffs(i)
+		Cliffs(j)
+		CliffsThinkSlow(i,lst1,lst2)
+		CliffsThinkFast(j,lst1,lst2)
+		print ""
+    print d,i.gt,i.lt,i.n
+    print d,j.gt,j.lt,j.n
+}}
+function _cliffs2(f,         i,j,lst1,lst2) {
+	nums("1,2,3,6,9,10",lst1)
+	nums("3,7,10,11",   lst2)
+	o(lst1,"lst1")
+	o(lst2,"lst2")
+	Cliffs(i)
+	Cliffs(j)
+  CliffsThinkSlow(i,lst1,lst2)
+  CliffsThinkFast(j,lst1,lst2)
+	print "--"
+  print i.lt,i.gt,i.n
+  print j.lt,j.gt,j.n
+}
 BEGIN {
-  tests("_norm,_beta,_dist3,_tri")
+	srand(1)
+  #tests("_norm,_beta1,_dist3,_tri,_cliffs")
+	_cliffs2(1)
 }

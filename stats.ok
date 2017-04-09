@@ -90,4 +90,68 @@ function Histshow(i,   scale,gap,b,n,show) {
 					 i.lo + b*gap,
 					 chars(n * scale, i.char))
 }}
+function Cliffs(i, want) {
+	i.lt = i.gt = i.n = 0
+	i.large  = 0.475
+  i.medium = 0.33
+	i.small  = 0.147
+	i.want   = either(want,"small")
+	has(i,"z")
+}
+function CliffsCriteria(i) {
+  return abs(i.gt - i.lt)/(i.n+1e-31) < i[i.want]
+}
+function L(i)      { i.pos=1; has(i,"all") }
+function Lupto(i)  { return i.pos }
+function Linc(i)   { return i.pos++ }
+function Lat(i)    { return i.all[i.pos] }
+function Lmore(i)  { return i.pos<length(i.all) }
+function Lend(i)   { return i.pos==length(i.all) }
+function Labove(i) { return length(i.all) - i.pos }
 
+function CliffsThinkFast(i,lst1,lst2,   x,y,z,one,two,tmp) {
+	print(1)
+	have(i.z,"as","L")
+	print(2)
+	have(i.z,"bs","L")
+	print(3)
+	i.n = length(lst1) * length(lst2)
+	x="as"
+	y="bs"
+	asort(lst1, i.z[x])
+	asort(lst2, i.z[y])
+	o(i.z[x],x)
+	o(i.z[y],y)
+	print "li",length(i.z[x]),Lmore(i.z[x]), Lmore(i.z[y])
+
+	while( Lmore(i.z[x]) &&  Lmore(i.z[y])) {
+		if ( Lat(i.z[x]) > Lat(i.z[y]) ) {
+			tmp= x
+			x  = y
+			y  = tmp 
+		}
+		one = Lat(i.z[x])
+		two = Lat(i.z[y])
+		print ">",x,y,one,two
+		if( one < two )
+			i.lt += Labove( Lat(i.z[y]) ) + 1
+		else if( one > two )
+			i.gt += Lupto(  Lat(i.z[y]) ) ;
+		Linc( i.z[x] )
+}}
+function CliffsThinkSlow(i,lst1,lst2,     j,k,n,x,y,gt,lt) {
+	print("::",i.lt,i.gt)
+	for(j in lst1)
+		for(k in lst2) {
+			x=lst1[j]
+			y=lst2[k]
+			i.n++
+			if (x > y) i.gt++
+			if (x < y) i.lt++
+}}
+function cliffs(lst1,lst2,   how,i) {
+   Cliffs(i)
+	 how = either(how,"CliffsThinkFast")
+	 @how(i,lst1,lst2)
+	 return CliffsCriteria(i)
+}

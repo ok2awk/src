@@ -11,6 +11,10 @@ Standard background stuff.
 BEGIN { FS=OFS="," }
 BEGIN { OK.id = 0  }
 
+function nums(s,a,    i) {
+  split(s,a,",")
+  for(i in a) a[i] += 0
+}
 function id(   tmp) {
   tmp = OK.id = OK.id + 1
   return tmp
@@ -22,6 +26,7 @@ function tests(fs,   a,f,i,n) {
    n = split(fs,a,",")
    for(i=1;i<=n;i++) {
      f = a[i]
+     print "# "f
      @f(f)
 }}
 function is(f,want,got,    pre) {
@@ -96,7 +101,7 @@ Print nested array.
 function o(l,prefix,order,
            indent,
            old,i) {
-  if (prefix="") prefix="o"
+  prefix=either(prefix,"o")
   if(! isarray(l)) {
     print "not array",prefix,l
     return 0}

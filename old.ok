@@ -1,8 +1,8 @@
+
+
 function beta(z,w,  e) {
 	e = 2.7182818284590452353602875
-  return e^(gammln(z*rand()) + \
-				    gammln(w*rand()) -  \
-						gammln((z+w)*rand())) 
+  return e^(gammln(z) + gammln(w)- gamln(z+w))
 }
 function gammln(xx,
 								 cof,y,x,tmp,ser,j) {
