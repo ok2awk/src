@@ -95,7 +95,7 @@ function Cliffs(i, want) {
 	i.large  = 0.475
   i.medium = 0.33
 	i.small  = 0.147
-	i.want   = either(want,"small")   
+	i.want   = either(want,"small"   )   
 	has(i,"z")
 }
 function CliffsCriteria(i) {
