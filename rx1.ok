@@ -9,20 +9,26 @@
 @include "oklib"
 @include "rx"
 
-function _xtiles(f,       r,prep,k,r,lst) {
-	r0     = 100
-	pre[1] = 0.5
-	pre[2] = 2
+function _xtiles(f) {
+	_xtiles1(f,0)
+	print("")
+	_xtiles1(f,1)
+}
+function _xtiles1(f,fours,       pre,k,r,r0,rxs,lst) {
+	r0     = 1000
+	pre[1] = 0.2
+	pre[2] = 5
 	pre[3] = 1
-	pre[4] = 2
+	pre[4] = 5
 	for(k in pre) {
-		haves(rxs, k, Rx, "rx" k)
+		haves(rxs, k, "Rx", "rx" k,fours)
 		r=r0
 		empty(lst)
 		while(r-- > 0)
 			push(lst, k+rand()^pre[k])
 		Rx1(rxs[k], lst)
 	}
+  rxsShow(rxs)
 }
 BEGIN {
   tests("_xtiles")

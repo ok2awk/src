@@ -30,11 +30,19 @@ fi
 dirs() {
   mkdir -p "$Awk" "$Lib" "$Tmp"  "$Docs" 
 }
+earlyAwk() {
+  awk -W version | awk -F, '/Awk/ {split($1,a," "); if (a[3] < 4) {exit 0 } else {exit 1}}'
+}
+if    [ -z `which awk` ] || earlyAwk
+then	echo 'Awk vertion 4+ not found. Exiting'
+	exit 1
+fi
+
 build() {
   f=${1%.*}
 	here=${PWD}
 	cd "$Awk"
-	gawk '
+	awk '
 	BEGIN { print "#!'`which gawk`' -f "
 		      build("'$f'") 
 	}
@@ -57,7 +65,7 @@ build() {
 }
 makeawk() {
   echo "# $1 to awk/" 1>&2
-  cat $1 | gawk '
+  cat $1 | awk '
   BEGIN {In = 1}
   gsub(/^"""/,"") {
     In =  1 - In
@@ -73,7 +81,7 @@ makeawk() {
 }
 makedoc() {
   echo "# $1 to docs/" 1>&2
-  cat $1 | gawk '
+  cat $1 | awk '
   BEGIN {In = 1; Pre=1}
   gsub(/^"""/,"") {
     In =  1 - In
@@ -97,7 +105,7 @@ makedoc() {
 		'
 }
 vars() {
-  [ -f "$Tmp/awkvars.out" ] && gawk '
+  [ -f "$Tmp/awkvars.out" ] && awk '
 		/[A-Z][A-Z]/ {next}
 		{print "W> rogue local: ",$0}' $Tmp/awkvars.out
 }
