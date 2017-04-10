@@ -45,7 +45,7 @@ function _tri(f,  r,h,lst) {
 }
 function _cliffs(f,   d,r,lst1,lst2,i,j) {
 	for(d=1; d<=1; d += 0.1) {
-		r = 1000
+		r= 1000
 	  empty(lst1)
 	  empty(lst2)
 	  while(r-- > 0) {
