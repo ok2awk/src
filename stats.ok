@@ -99,6 +99,7 @@ function Cliffs(i, want) {
 	i.lt = i.gt = i.n = 0
 }
 function Cliffs1(i,lst1,lst2,  f,v,t) {
+	# return 1 if lst1 and lst2 are trivially different
 	i.n = length(lst1) * length(lst2)
   f = i.how
 	@f(i,lst1,lst2)
