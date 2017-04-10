@@ -43,24 +43,24 @@ function _tri(f,  r,h,lst) {
 		Hist1(h,  triangle(20,30,70))
 	Histshow(h)
 }
-function _cliffs(f,   d,r,lst1,lst2,i,j) {
-	for(d=1; d<=1; d += 0.1) {
+function _cliffs(f,   d,r,lst1,lst2,i,j,v1,v2) {
+	for(d=0.1; d<=1.5; d += 0.4) {
 		r= 1000
-	  empty(lst1)
-	  empty(lst2)
 	  while(r-- > 0) {
-		  lst1[r] = int(100*rand())
-		  lst2[r] = int(100*d*rand())
+		  lst1[r] = int(100*normal(1,d))
+		  lst2[r] = int(100*normal(2,d))
     }
 		Cliffs(i)
-		Cliffs(j,"CliffFast")
+		Cliffs(j)
+		j.how="CliffSlow"
     v1= Cliffs1(i,lst1,lst2)
     v2= Cliffs1(j,lst1,lst2)
-		print i.lt, i.gt, i.n, v1
-		print j.lt, j.gt, j.n, v2
+		is(f"lt",i.lt,j.lt)
+		is(f"gt",i.gt,j.gt)
+		is(f"n" ,i.n,j.n)
+		is(f"v" ,v1,v2)
 }}
 BEGIN {
 	srand(1)
-  #tests("_norm,_beta1,_dist3,_tri,_cliffs")
-	_cliffs(1)
+  tests("_norm,_beta1,_dist3,_tri,_cliffs")
 }

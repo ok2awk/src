@@ -46,7 +46,7 @@ function beta90() { return rand()^(1/9) }
 
 function normal(mu,sd,i) {
 	Normal(i,mu,sd)
-	return Nomral1(i)
+	return Normal1(i)
 }
 function any2(all,   n,i) {
 	n = length(all)
@@ -96,25 +96,27 @@ function Cliffs(i, want) {
 	i.small  = 0.147
 	i.want   = either(want,"small")   
 	i.how    = "CliffFast"
+	i.lt = i.gt = i.n = 0
 }
-function Cliffs1(i,lst1,lst2,  f,v) {
+function Cliffs1(i,lst1,lst2,  f,v,t) {
 	i.n = length(lst1) * length(lst2)
   f = i.how
-	@f(i,list1,lst2)
-	return abs(i.gt - i.lo) / (i.n + 1e-32)
+	@f(i,lst1,lst2)
+	t= abs(i.gt - i.lo) / (i.n + 1e-32) 
+	return t < i[i.want]
 }
 function CliffFast(i,lst1,lst2,   
-									 m,n,lst3,j,x,lo,hi) {
+									 m,n,lst3,j,x,lo,hi,r) {
 	m= length(lst1) 
 	n= length(lst2)
 	asort(lst2, lst3)
 	for(j in lst1) {
 		x= lst1[j]
 		lo= hi= bsearch(lst3,x,1)
-    while(lo > 1 && lst3[lo] >= x) lo--
-    while(hi < n && lst3[hi] <= x) hi++
-		i.gt += n - hi + 1
-		i.lt += lo
+    while(lo >= 1 && lst3[lo] >= x) lo-- 
+    while(hi <= n && lst3[hi] <= x) hi++
+		i.lt += n - hi + 1
+		i.gt += lo
 }}
 function CliffSlow(i,lst1,lst2,     
 									 j,k,x,y) {

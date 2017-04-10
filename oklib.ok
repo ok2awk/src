@@ -45,15 +45,15 @@ function tests(fs,   a,f,i,n) {
    n = split(fs,a,",")
    for(i=1;i<=n;i++) {
      f = a[i]
-     print "# "f
+     print " "
      @f(f)
 }}
 function is(f,want,got,    pre) {
-  pre = "#TEST:\t" f "\t" want "\t" got 
   if (want == got)
-    print pre "\tPASSED" 
+    pre="#TEST:\tPASSED" 
   else
-    print pre "\tFAILED"
+    pre="#TEST:\tFAILED"
+  print pre "\t" f "\t" want "\t" got 
 }
 function has(lst,key) { 
   lst[key][314286]
