@@ -1,4 +1,4 @@
-# /* vim: set filetype=awk ts=2 sw=2 sts=2  : */
+# /* vim: set filetype=awk ts=2 sw=2 sts=2 expandtab: */
 BEGIN {
   OK.tips.author  = "Omar Khayyam"
   OK.tips.email   = "omar@khayyam__persia"
@@ -12,12 +12,12 @@ BEGIN {
 ## About Stats
 
 """
-
+      
 @include "oklib"
 
 function Normal(i, mu,sd) {
-	i.mu= mu == "" ? 0 : mu
-	i.sd= sd == "" ? 1 : sd
+  i.mu= mu == "" ? 0 : mu
+  i.sd= sd == "" ? 1 : sd
 }
 function Normal1(i) {
   return i.mu + i.sd * NormalZ()
@@ -45,83 +45,83 @@ function beta80() { return rand()^0.25  }
 function beta90() { return rand()^(1/9) }
 
 function normal(mu,sd,i) {
-	Normal(i,mu,sd)
-	return Normal1(i)
+  Normal(i,mu,sd)
+  return Normal1(i)
 }
 function any2(all,   n,i) {
-	n = length(all)
-	i = int(n*rand()) + 1  
-	if (i==n)
-		i--
-	return all[i] + rand()*(all[i+1]-all[i])
+  n = length(all)
+  i = int(n*rand()) + 1  
+  if (i==n)
+    i--
+  return all[i] + rand()*(all[i+1]-all[i])
 }
 function triangle(a,c,b,   u) {
-	u = rand()
-	if (u < (c-a)/(b-a))
-		return a + (    u*(b-a)*(c-a))^0.5
-	else
-		return b - ((1-u)*(b-a)*(b-c))^0.5
+  u = rand()
+  if (u < (c-a)/(b-a))
+    return a + (    u*(b-a)*(c-a))^0.5
+  else
+    return b - ((1-u)*(b-a)*(b-c))^0.5
 }
 function Hist(i,lo,hi,bins) {
-	has(i,"_data")
-	i.bins  = bins
+  has(i,"_data")
+  i.bins  = bins
   i.lo    = lo
   i.hi    = hi
-	i.fmt   = "%8.1f : %s"
-	i.char  = "*"
-	i._maxb = 0
-	i.max   = 50
+  i.fmt   = "%8.1f : %s"
+  i.char  = "*"
+  i._maxb = 0
+  i.max   = 50
 }
 function Hist1(i,x,    b,n) {
-	if(x == i.hi)
-	  x -= 1e-32
-	b = int(i.bins*(x - i.lo)/(i.hi - i.lo + 1e-32))
-	n = ++i._data[b]
-	if (n >  i._maxb)
-	  i._maxb=n
+  if(x == i.hi)
+    x -= 1e-32
+  b = int(i.bins*(x - i.lo)/(i.hi - i.lo + 1e-32))
+  n = ++i._data[b]
+  if (n >  i._maxb)
+    i._maxb=n
 }
 function Histshow(i,   scale,gap,b,n,show) {
-	scale = i._maxb > i.max ? i.max/i._maxb : 1
-	gap = (i.hi - i.lo)/i.bins
-	for(b=0; b< i.bins; b++) { 
-		n = i._data[b]
-		show = n > 0 ? n : ""
+  scale = i._maxb > i.max ? i.max/i._maxb : 1
+  gap = (i.hi - i.lo)/i.bins
+  for(b=0; b< i.bins; b++) { 
+    n = i._data[b]
+    show = n > 0 ? n : ""
     printf(i.fmt " " show "\n", 
-					 i.lo + b*gap,
-					 chars(n * scale, i.char))
+           i.lo + b*gap,
+           chars(n * scale, i.char))
 }}
 function Cliffs(i, want) {
-	i.large  = 0.475
+  i.large  = 0.475
   i.medium = 0.33
-	i.small  = 0.147
-	i.want   = either(want,"small")   
-	i.how    = "CliffFast"
-	i.lt = i.gt = i.n = 0
+  i.small  = 0.147
+  i.want   = either(want,"small")   
+  i.how    = "CliffFast"
+  i.lt = i.gt = i.n = 0
 }
 function Cliffs1(i,lst1,lst2,  f,v,t) {
-	# return 1 if lst1 and lst2 are trivially different
-	i.n = length(lst1) * length(lst2)
+  # return 1 if lst1 and lst2 are trivially different
+  i.n = length(lst1) * length(lst2)
   f = i.how
-	@f(i,lst1,lst2)
-	return abs(i.gt - i.lo) / (i.n + 1e-32) < i[i.want]
+  @f(i,lst1,lst2)
+  return abs(i.gt - i.lo) / (i.n + 1e-32) < i[i.want]
 }
 function CliffFast(i,lst1,lst2,   
-									 n,lst3,j,x,lo,hi) {
-	n= asort(lst2, lst3)
-	for(j in lst1) {
-		x= lst1[j]
-		lo= hi= bsearch(lst3,x,1)
+                   n,lst3,j,x,lo,hi) {
+  n= asort(lst2, lst3)
+  for(j in lst1) {
+    x= lst1[j]
+    lo= hi= bsearch(lst3,x,1)
     while(lo >= 1 && lst3[lo] >= x) lo-- 
     while(hi <= n && lst3[hi] <= x) hi++
-		i.lt += n - hi + 1
-		i.gt += lo
+    i.lt += n - hi + 1
+    i.gt += lo
 }}
 function CliffSlow(i,lst1,lst2,     
-									 j,k,x,y) {
-	for(j in lst1)
-		for(k in lst2) {
-			x= lst1[j]
-			y= lst2[k]
-			if(x > y) i.gt++
-			if(x < y) i.lt++
+                   j,k,x,y) {
+  for(j in lst1)
+    for(k in lst2) {
+      x= lst1[j]
+      y= lst2[k]
+      if(x > y) i.gt++
+      if(x < y) i.lt++
 }}
