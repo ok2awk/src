@@ -103,14 +103,11 @@ function Cliffs1(i,lst1,lst2,  f,v,t) {
 	i.n = length(lst1) * length(lst2)
   f = i.how
 	@f(i,lst1,lst2)
-	t= abs(i.gt - i.lo) / (i.n + 1e-32) 
-	return t < i[i.want]
+	return abs(i.gt - i.lo) / (i.n + 1e-32) < i[i.want]
 }
 function CliffFast(i,lst1,lst2,   
-									 m,n,lst3,j,x,lo,hi,r) {
-	m= length(lst1) 
-	n= length(lst2)
-	asort(lst2, lst3)
+									 n,lst3,j,x,lo,hi) {
+	n= asort(lst2, lst3)
 	for(j in lst1) {
 		x= lst1[j]
 		lo= hi= bsearch(lst3,x,1)
