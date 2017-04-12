@@ -1,10 +1,10 @@
 # /* vim: set filetype=awk ts=2 sw=2 sts=2  : */
 BEGIN {
-  OK.tips.author  = "Omar Khayyam"
-  OK.tips.email   = "omar@khayyam__persia"
-  OK.tips.version = "0.1"
-  OK.tips.license = "opensource__org/licenses/BSD-3-Clause"
-  OK.tips.more    = "ok2awk__github__io/tiles"
+  OK.rx.author  = "Tim Menzies"
+  OK.rx.email   = "tim@menzies__us"
+  OK.rx.version = "0.1"
+  OK.rx.license = "opensource__org/licenses/BSD-3-Clause"
+  OK.rx.more    = "ok2awk__github__io/tiles"
 }
 
 """
@@ -27,6 +27,7 @@ function Rx(i,txt,fours) {
 	has(i, "data")
 	has(i, "breaks")
 }
+
 function Rx1(i,all,        m,q,k) {
 	for(k=1; k<=i.width; k++) 
 		i.string[k] = " "
@@ -39,8 +40,9 @@ function Rx1(i,all,        m,q,k) {
 		i.breaks[k] = i.data[k*q] 
 	i.breaks[k+1] = i.hi
 	i.breaks[0]   = i.lo
+	i.median = fours ? i.breaks[2] : i.breaks[3]
 }
-function rxsShow(rxs,    j,k,lo,hi) {
+function rxsShow(rxs,    j,k,n,lo,hi) {
 	lo =  1e31
 	hi = -1e31
 	for(j in rxs) {
@@ -49,6 +51,9 @@ function rxsShow(rxs,    j,k,lo,hi) {
 	}
 	for(j in rxs)
 		print RxReport(rxs[j],lo,hi) " " RxNums(rxs[j])
+	n= asort(rxs,rxs,"medianSort")
+	for(j=1;j<=n;j++)
+		XXXX()
 }
 function RxNums(i,   s,k) {
 	s = sprintf(i.f ", ", i.breaks[0])

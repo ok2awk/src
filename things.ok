@@ -1,4 +1,11 @@
-# /* vim: set filetype=awk ts=2 sw=2 sts=2 et : */
+# /* vim: set filetype=awk ts=2 sw=2 sts=2 et expandtabs: */
+BEGIN {
+  OK.things.author  = "Tim Menzies"
+  OK.things.email   = "tim@menzies__us"
+  OK.things.version = "0.1"
+  OK.things.license = "opensource__org/licenses/BSD-3-Clause"
+  OK.things.more    = "ok2awk__github__io/tiles"
+}
 
 """
 
@@ -30,6 +37,7 @@ Number       |  hi=-1e32  ,lo=1e32  ,bins=5 ,n=0 ,mu=0 ,m2=0 ,sd=0
 
 """
 @include "oklib"
+@include "sample"
 """
 
 ### Row
@@ -130,8 +138,8 @@ function NumberFarcade1(i,v) {
 
 """
 function Sample(i,     most) {
-  i.most= most ? most : 64 # keep up to 64 items
-  have(i,"all")            # i.all holds the kept value
+  i.most= either(most,64)  # keep up to 64 items
+  has(i,"all")             # i.all holds the kept value
   i.n=0
 }
 function Sample1(i,v,    

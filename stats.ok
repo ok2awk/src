@@ -1,10 +1,10 @@
 # /* vim: set filetype=awk ts=2 sw=2 sts=2 expandtab: */
 BEGIN {
-  OK.tips.author  = "Omar Khayyam"
-  OK.tips.email   = "omar@khayyam__persia"
-  OK.tips.version = "0.1"
-  OK.tips.license = "opensource__org/licenses/BSD-3-Clause"
-  OK.tips.more    = "ok2awk__github__io/info/stats"
+  OK.stats.author  = "Tim Menzies"
+  OK.stats.email   = "tim@menzies__us"
+  OK.stats.version = "0.1"
+  OK.stats.license = "opensource__org/licenses/BSD-3-Clause"
+  OK.stats.more    = "ok2awk__github__io/info/stats"
 }
 
 """

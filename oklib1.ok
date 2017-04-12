@@ -14,6 +14,9 @@ function _test(f) {
   is(f,1, 1)
   is(f,0, 1)
 }
+function _procinfo(f) {
+  o(PROCINFO,"procinfo")
+}
 function _ltgt(f) {
   is(f,1, gt(10,8))
   is(f,0, gt(6,8))
@@ -41,5 +44,5 @@ function _bsearch(f,  j0,j,r,r1,r2,lst) {
 }
 BEGIN {
   srand(1)
-  tests("_test,_ltgt,_med,_bsearch")
+  tests("_test,_procinfo,_ltgt,_med,_bsearch")
 }

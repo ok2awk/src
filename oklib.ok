@@ -107,6 +107,8 @@ function median(lst,
       q = p + 1;
   return p==q ? lst[p] : (lst[p]+lst[q])/2
 }
+
+function medianSort(i,x,j,y) { return x.median < y.median } 
 """
 
 ### o

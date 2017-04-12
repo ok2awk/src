@@ -1,0 +1,31 @@
+# /* vim: set filetype=awk ts=2 sw=2 sts=2 expandtab: */
+
+"""
+
+## Testing Sample
+
+"""
+
+@include "oklib"
+@include "sample"
+@include "stats"
+
+function _sample(f,    h,v,i,r,m) {
+  print 1
+  Sample(i)
+  Hist(h,0,1,10)
+  r=1000
+  while(r-- > 0) {
+    v= rand()
+    Sample1(i,v)
+    Hist1(h,v)
+  }
+  m=  median(i.all)
+  is(f"med", 0.45 <= m && m <= 0.55, 1) 
+  Histshow(h)
+
+}
+BEGIN {
+  srand(1)
+  tests("_sample")
+}

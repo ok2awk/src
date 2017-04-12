@@ -118,11 +118,11 @@ file() {
     cat<<-EOF > $1.ok
 $MyHeader
 BEGIN {
-  OK.tips.author  = "$MyName"
-  OK.tips.email   = "$MyEmail"
-  OK.tips.version = "0.1"
-  OK.tips.license = "$MyLicense"
-  OK.tips.more    = "$MySite/$1"
+  OK.$1.author  = "$MyName"
+  OK.$1.email   = "$MyEmail"
+  OK.$1.version = "0.1"
+  OK.$1.license = "$MyLicense"
+  OK.$1.more    = "$MySite/$1"
 }
 
 """
@@ -143,7 +143,7 @@ $MyHeader
 
 """
 
-@include "ok"
+@include "oklib"
 @include "$1"
 
 BEGIN {
@@ -160,8 +160,8 @@ profile() {
 }
 run() {
   AWKPATH="$Awk:$AWKPATH" gawk '
-	   @include "ok"
-		 BEGIN { '"$*"'}'
+	   @include "oklib"
+		 BEGIN {  '"$*"'}'
 }
 tests() {
   for n in $*; do
