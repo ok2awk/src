@@ -132,31 +132,6 @@ function NumberFarcade1(i,v) {
 }}
 """
 
-### Sample
-
-`Sample`  holds a random sample of the data see too date.
-
-"""
-function Sample(i,     most) {
-  i.most= either(most,64)  # keep up to 64 items
-  has(i,"all")             # i.all holds the kept value
-  i.n=0
-}
-function Sample1(i,v,    
-                 added,len) {
-  i.n++
-  len=length(i.all)
-  if (len < i.most) {  # the cache is not full, add something
-    push(i.all,v)
-    added=1
-  } else if (rand() < len/i.n) {  # else, sometimes, add "v"
-    i.all[ int(len*rand()) + 1 ] = v
-    added=1
-  }
-  return added
-}
-"""
-
 ### Symbol
 
 The `Symbol` constructor initializes
