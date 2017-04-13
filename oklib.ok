@@ -91,6 +91,10 @@ function copy(a1,a2,  i) {
 }
 function empty(a) { split("",a,"") }
 function push(i,v) { i[length(i) + 1] = v }
+function pushes(i,j) { 
+  for(k =1; k<= length(j); k++)
+    push(i, j[k])
+}
 
 function isnum(x) { 
   return x=="" ? 0 : x == (0+strtonum(x)) 
@@ -108,7 +112,8 @@ function median(lst,
   return p==q ? lst[p] : (lst[p]+lst[q])/2
 }
 
-function medianSort(i,x,j,y) { return x.median < y.median } 
+function medianSortUp(i,x,j,y) { return x.median < y.median } 
+function medianSortUp(i,x,j,y) { return x.median > y.median } 
 """
 
 ### o

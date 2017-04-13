@@ -41,8 +41,10 @@ function Rx1(i,all,        m,q,k) {
 	i.breaks[k+1] = i.hi
 	i.breaks[0]   = i.lo
 	i.median = fours ? i.breaks[2] : i.breaks[3]
+	i.rank = 1
 }
-function rxsShow(rxs,    j,k,n,lo,hi) {
+function rxsShow(rxs,order,    j,k,n,lo,hi) {
+	order = either(order, "medianSortUp")
 	lo =  1e31
 	hi = -1e31
 	for(j in rxs) {
@@ -50,10 +52,22 @@ function rxsShow(rxs,    j,k,n,lo,hi) {
 		if (rxs[j].hi > hi) hi = rxs[j].hi
 	}
 	for(j in rxs)
-		print RxReport(rxs[j],lo,hi) " " RxNums(rxs[j])
-	n= asort(rxs,rxs,"medianSort")
-	for(j=1;j<=n;j++)
-		XXXX()
+		RxReport(rxs[j],lo,hi) 
+	n= asort(rxs,rxs,oder)
+	rank=1
+	pushes(last,rxs[1].all)
+	for(j=2;j<=n;j++) {
+		if (! cliffsDelta(last,rxs[j].all)) {
+			rank++
+			empty(last)
+	  }
+		pushes(last,rxs[j].all)
+	  rxs[j].rank = rank
+		printf("%3s | %s  %s\n",
+					 rxs[j].rank,
+					 rxs[j].report,
+					 RxNums(rxs[j])
+	}
 }
 function RxNums(i,   s,k) {
 	s = sprintf(i.f ", ", i.breaks[0])
