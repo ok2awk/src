@@ -9,11 +9,11 @@ mkdir -p "$HOME/.config/ok"
 Config="$HOME/.config/ok/config"
 
 if [ ! -f "$Config" ]; then cat <<-EOF > "$Config"
-	MyName="Omar Khayyam" # 11th century scholar
+	MyName="Omar Khayyam" # 11th century scholar. cool guy. look him up!
 	MyEmail="omar@khayyam__persia"
 	MySite="ok2awk__github__io"
 	MyLicense="opensource__org/licenses/BSD-3-Clause"
-	MyHeader="# /* vim: set filetype=awk ts=2 sw=2 sts=2  expandtab: */"
+	MyHeader="# /* vim: set filetype=awk ts=2 sw=2 sts=2 expandtab: */"
   
 	Awk="$HOME/opt/ok/awk"   # where to keep the generated awk files
 	Lib="$HOME/opt/ok/lib"   # where to keep the built awk apps
@@ -23,6 +23,7 @@ EOF
 fi
 
 . "$Config"
+
 
 # End CONFIG
 #######################################################################

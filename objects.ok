@@ -1,0 +1,73 @@
+# /* vim: set filetype=awk ts=2 sw=2 sts=2 expandtab: */
+BEGIN {
+  OK.objects.author  = "Tim Menzies"
+  OK.objects.email   = "tim@menzies__us"
+  OK.objects.version = "0.1"
+  OK.objects.license = "opensource__org/licenses/BSD-3-Clause"
+  OK.objects.more    = "ok2awk__github__io/objects"
+}
+
+"""
+
+## About Objects
+
+"""
+
+@include "oklib"
+
+function has(lst,key) { 
+  lst[key][314286]
+  split("",lst[key],"")
+}
+function have(lst,key,fun) { 
+  has(lst,key)
+  if (fun)
+    @fun(lst[key]) 
+}
+function haves(lst,key,fun,
+               a,b,c,d,e) { 
+  has(lst,key)
+  if (fun) {
+    if      (a=="") @fun(lst[key]) 
+    else if (b=="") @fun(lst[key],a) 
+    else if (c=="") @fun(lst[key],a,b) 
+    else if (d=="") @fun(lst[key],a,b,c) 
+    else if (e=="") @fun(lst[key],a,b,c,d) 
+    else            @fun(lst[key],a,b,c,d,e) 
+}}
+
+function has(lst,key) { 
+  lst[key][314286]
+  split("",lst[key],"")
+}
+function have(lst,key,fun) { 
+  has(lst,key)
+  if (fun)
+    @fun(lst[key]) 
+}
+function haves(lst,key,fun,
+               a,b,c,d,e) { 
+  has(lst,key)
+  if (fun) {
+    if      (a=="") @fun(lst[key]) 
+    else if (b=="") @fun(lst[key],a) 
+    else if (c=="") @fun(lst[key],a,b) 
+    else if (d=="") @fun(lst[key],a,b,c) 
+    else if (e=="") @fun(lst[key],a,b,c,d) 
+    else            @fun(lst[key],a,b,c,d,e) 
+}}
+
+function objectp(i) {
+  return "_isa" in i
+}
+function isa(i,x, mummy) {
+  if (mummy != '') {
+  i["_isa"] = x
+}
+BEGIN { OK.objects.id = 0  }
+
+function id(   tmp) {
+  tmp = OK.objects.id = OK.objects.id + 1
+  return tmp
+}
+

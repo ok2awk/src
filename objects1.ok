@@ -1,0 +1,14 @@
+# /* vim: set filetype=awk ts=2 sw=2 sts=2 expandtab: */
+
+"""
+
+## Testing Objects
+
+"""
+
+@include "oklib"
+@include "objects"
+
+BEGIN {
+  tests("")
+}
