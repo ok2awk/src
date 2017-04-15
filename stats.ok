@@ -80,7 +80,7 @@ function Hist1(i,x,    b,n) {
   if (n >  i._maxb)
     i._maxb=n
 }
-function Histshow(i,   scale,gap,b,n,show) {
+function HistShow(i,   scale,gap,b,n,show) {
   scale = i._maxb > i.max ? i.max/i._maxb : 1
   gap = (i.hi - i.lo)/i.bins
   for(b=0; b< i.bins; b++) { 

@@ -70,10 +70,21 @@ makeawk() {
   gsub(/^"""/,"") {
     In =  1 - In
   }
+/^function[ \t]*[A-Z].*\(/ {
+    tmp=args=pre=""
+    tmp=$0
+		#gsub(/^.*\(/,"",tmp)
+		#gsub(/(\).*|,[ \t]+.*)/,"",tmp)
+		#args=split(tmp,_,",")
+		#print "XXX",tmp,args
+    pre= gensub(/(^function[ \t]+)([A-Z][0-9a-z_]+)([A-Z][A-Za-z_0-9]+)\(.*/,
+		            "BEGIN { _defMethod(\"\\2\",\"\\3\")} ","g",$0)
+		$0= pre  $0				 
+  }
   { txt = gensub(/\.([a-zA-Z_])([a-zA-Z0-9_]*)/,
                  "[\"\\1\\2\"]",
                  "g",
-                 $0)
+							   $0)
     gsub(/__/,".",txt)
     print (In ? "" : "## ") txt
   } 
@@ -189,11 +200,11 @@ gitready() {
   git config --global credential.helper cache
   git config credential.helper 'cache --timeout=3600'
 }
-old() {
+hello() {
   gitready
   git pull origin master
 }
-new() {
+bye() {
   gitready
   git add .
   git commit -am newStuff
@@ -210,8 +221,8 @@ fun() {
 dirs
 ready
 
-if   [ "$1" == "new"     ]; then new;
-elif [ "$1" == "old"     ]; then old;
+if   [ "$1" == "bye"     ]; then bye;
+elif [ "$1" == "hello"     ]; then hello;
 elif [ "$1" == "profile" ]; then profile;
 elif [ "$1" == "1"       ]; then tests 1;
 elif [ "$1" == "12"      ]; then tests 1 2;

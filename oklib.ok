@@ -113,7 +113,7 @@ function median(lst,
 }
 
 function medianSortUp(i,x,j,y) { return x.median < y.median } 
-function medianSortUp(i,x,j,y) { return x.median > y.median } 
+function medianSortDown(i,x,j,y) { return x.median > y.median } 
 """
 
 ### o
