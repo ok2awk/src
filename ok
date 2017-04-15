@@ -66,32 +66,11 @@ build() {
 }
 makeawk() {
   echo "# $1 to awk/" 1>&2
-  awk -f ./ok2awk.awk $1
+  awk -f ./etc/ok2awk.awk $1
 }
 makedoc() {
   echo "# $1 to docs/" 1>&2
-  cat $1 | awk '
-  BEGIN {In = 1; Pre=1}
-  gsub(/^"""/,"") {
-    In =  1 - In
-    if (Pre)
-       Pre=0
-    else {
-      if (In)  {
-        print ""
-        print "```c " $0
-      } else {
-        print "```" $0
-        print ""
-     }
-    }
-    next
-  }
-  Pre { next }
-      { sub(/^#/,"")
-       print }
-	END  { if (In) print "```\n" }
-		'
+  awk -f etc/ok2md.awk $1
 }
 vars() {
   [ -f "$Tmp/awkvars.out" ] && awk '
