@@ -66,30 +66,7 @@ build() {
 }
 makeawk() {
   echo "# $1 to awk/" 1>&2
-  cat $1 | awk '
-  BEGIN {In = 1}
-  gsub(/^"""/,"") {
-    In =  1 - In
-  }
-/^function[ \t]*[A-Z].*\(/ {
-    tmp=args=pre=""
-    tmp=$0
-		#gsub(/^.*\(/,"",tmp)
-		#gsub(/(\).*|,[ \t]+.*)/,"",tmp)
-		#args=split(tmp,_,",")
-		#print "XXX",tmp,args
-    pre= gensub(/(^function[ \t]+)([A-Z][0-9a-z_]+)([A-Z][A-Za-z_0-9]+)\(.*/,
-		            "BEGIN { defMethod(\"\\2\",\"\\3\")} ","g",$0)
-		$0= pre  $0				 
-  }
-  { txt = gensub(/\.([a-zA-Z_])([a-zA-Z0-9_]*)/,
-                 "[\"\\1\\2\"]",
-                 "g",
-							   $0)
-    gsub(/__/,".",txt)
-    print (In ? "" : "## ") txt
-  } 
-	'
+  awk -f ./ok2awk.awk $1
 }
 makedoc() {
   echo "# $1 to docs/" 1>&2
