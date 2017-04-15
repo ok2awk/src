@@ -1,3 +1,17 @@
+build only the aa_.ok files
+
+pull apart methods names
+expand isa 
+add call t
+
+pull apary ok2awk as asperate file
+
+fix o. looks like it is leaving in a procsym
+
+## error message
+
+nonexistance functions as error messags
+
 ## Config
 
 You config options are stored  in $HOME/.config/ok/config
@@ -10,6 +24,8 @@ Words are
 Up words are words that start with `A-Z`.
 
 Down words are words that start with `a-z_`.
+
+Single parent inheritance
 
 Classes are GAWK functions whose names are up words with only one upper case letter. For example:
 

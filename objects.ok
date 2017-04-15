@@ -35,33 +35,43 @@ function haves(lst,key,fun,
     else if (e=="") @fun(lst[key],a,b,c,d) 
     else            @fun(lst[key],a,b,c,d,e) 
 }}
-
-function has(lst,key) { 
-  lst[key][314286]
-  split("",lst[key],"")
+function defMethod(class,method) {
+  OK.objects[class][method] = class method
 }
-function have(lst,key,fun) { 
-  has(lst,key)
-  if (fun)
-    @fun(lst[key]) 
+function methodLookup(i,method,    class) {
+  class=objectp(i)
+  while class {
+    if (method in OK.objects[class])
+      return OK.objects[class][method]
+    else {
+      if (class in OK.objects.mummy)
+        class = OK.objects.mummy
+      else
+        break
+  }
+  methodNotFound(method)
 }
-function haves(lst,key,fun,
-               a,b,c,d,e) { 
-  has(lst,key)
+function msg(i,what,a,b,c,d,e) {
+  fun = methodLookUp(i,what)
   if (fun) {
-    if      (a=="") @fun(lst[key]) 
-    else if (b=="") @fun(lst[key],a) 
-    else if (c=="") @fun(lst[key],a,b) 
-    else if (d=="") @fun(lst[key],a,b,c) 
-    else if (e=="") @fun(lst[key],a,b,c,d) 
-    else            @fun(lst[key],a,b,c,d,e) 
-}}
-
-function objectp(i) {
-  return "_isa" in i
+    if      (a=="") return @fun(i)
+    else if (b=="") return @fun(i,a)
+    else if (c=="") return @fun(i,a,b)
+    else if (d=="") return @fun(i,a,b,c)
+    else if (e=="") return @fun(i,a,b,c,d)
+    else            return @fun(i,a,b,c,d,e)
+  } else 
+    methodNotFound(what)
 }
-function isa(i,x, mummy) {
-  if (mummy != '') {
+function objectp(i) {
+  if (isarray(i))
+    if ("_isa" in i)
+      return i._isa 
+}
+function isa(i,x, mummy,   tmp) {
+  up=objectp(mummy)
+  if (tmp) 
+    OK.objects.mummy[x] = up
   i["_isa"] = x
 }
 BEGIN { OK.objects.id = 0  }
