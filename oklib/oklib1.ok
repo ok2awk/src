@@ -8,7 +8,6 @@
 """
 
 @include "oklib"
-@include "rules"
 
 function _test(f) {
   is(f,1, 1)

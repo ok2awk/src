@@ -7,7 +7,7 @@
 """
 
 @include "oklib"
-@include "objects"
+@include "oklibobjects"
 
 BEGIN {
   tests("")

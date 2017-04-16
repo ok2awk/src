@@ -8,17 +8,12 @@ pull apary ok2awk as asperate file
 
 fix o. looks like it is leaving in a procsym
 
-## directories
-
-any directory names `_*` is part of the ok package mangement system... don't got there
-
-all other directories are packages
-
 ## packages
 
 packages live in a directory `xx`.
 
-files with that directory are all called `xx/xxone.ok, xx/xxtwo.ok`.
+files with that directory  have a _prefix convention_:
+are all called `xx/xxone.ok, xx/xxtwo.ok`.
 
 for convenience, there should also a main file xx/xx.ok that loads
 all the other files:
@@ -28,6 +23,18 @@ all the other files:
 @include "xxwo"
 etc
 ```
+
+## directories
+
+any directory names `_*` is part of the ok package mangement system... don't got there
+
+all other directories are packages
+
+## files
+
+across all packages, all files must have unique names since they will
+all be copied into one flat directory `$AWKLIB` (hence the  above prefix 
+covention).
 
 ## error message
 
@@ -57,7 +64,7 @@ function Histogram(i) {
 
 ```
 
-Note that classes have at least one argument for the object, typically called `i` (analogous to `self` or `this` in other OO languages).
+Note that classes have at least one argument for the object, which must be called `i` (analogous to `self` or `this` in other OO languages).
 Classes intialize the contents of the object `i`.
 
 Subclasses include the call `isa(Superclass(i))`. The last argument is optitional. 
@@ -80,6 +87,9 @@ Methods are GAWK functions whose name are two or more upwords where the first up
 For example 
 
 Function names are down words.
+
+
+_X_ is a system function. programers should never reimplement _such_ functions
 
 
 any combinations of 
@@ -138,6 +148,14 @@ The `ok` test engine runs all the `*1.ok` files before
 So place quick unit tests in `*1.ok` files and slow system tests
 are held in `*4.ok` files (and in between, you can get creative). 
 
+Test files always start by loading in `oklib` and the file they wwish to test. So the test for `oklibtests`
+is in the file `ok/oklibtests1` which starts with:
+
+```
+@include "oklib"
+@include "oklibtests"
+```
+
 Test files contain test functions. The following rules apply for those files:
 
 - Test function names start with a leading `_` character
@@ -150,4 +168,6 @@ BEGIN { tests("_testfun1,_testfun2,etc") }
 ```
 
 
+Default arguments for functions. seperate creation for use.
 
+Closures(ish). Build a visitor pattern that carries round an oject

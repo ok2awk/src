@@ -35,7 +35,7 @@ function haves(lst,key,fun,
     else if (e=="") @fun(lst[key],a,b,c,d) 
     else            @fun(lst[key],a,b,c,d,e) 
 }}
-function defMethod(class,method) {
+function _defMethod_(class,method) {
   OK.objects[class][method] = class method
 }
 function methodLookup(i,method,    class) {
@@ -44,15 +44,15 @@ function methodLookup(i,method,    class) {
     if (method in OK.objects[class])
       return OK.objects[class][method]
     else {
-      if (class in OK.objects.mummy)
-        class = OK.objects.mummy
+      if (class in OK.objects.parent)
+        class = OK.objects.parent[class]
       else
         break
   }
   methodNotFound(method)
 }
-function msg(i,what,a,b,c,d,e) {
-  fun = methodLookUp(i,what)
+function _message_(i,fun,a,b,c,d,e) {
+  fun = methodLookUp(i,fun)
   if (fun) {
     if      (a=="") return @fun(i)
     else if (b=="") return @fun(i,a)
@@ -63,21 +63,24 @@ function msg(i,what,a,b,c,d,e) {
   } else 
     methodNotFound(what)
 }
+function Object(i) {
+  i._isa_="object"
+}
 function objectp(i) {
   if (isarray(i))
-    if ("_isa" in i)
-      return i._isa 
+    if ("_isa_" in i)
+      return i._isa_ 
 }
-function isa(i,x, mummy,   tmp) {
-  up=objectp(mummy)
-  if (tmp) 
-    OK.objects.mummy[x] = up
-  i["_isa"] = x
+function _isa_(i,kid,parent,_,  up) {
+  up=objectp(parent)
+  if (up)
+    OK.oklib.objects.parent[kid] = up
+  i["_isa_"] = kid
 }
 BEGIN { OK.objects.id = 0  }
 
 function id(   tmp) {
-  tmp = OK.objects.id = OK.objects.id + 1
+  tmp = OK.objects.id = OK.objects._id_ + 1
   return tmp
 }
 

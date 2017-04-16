@@ -7,7 +7,8 @@
 """
 
 @include "oklib"
-@include "stats"
+@include "tim"
+@include "timstats"
 
 function _norm(f, n,r,h) {
 	print("")

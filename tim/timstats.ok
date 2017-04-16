@@ -19,10 +19,10 @@ function Normal(i, mu,sd) {
   i.mu= mu == "" ? 0 : mu
   i.sd= sd == "" ? 1 : sd
 }
-function Normal1(i) {
-  return i.mu + i.sd * NormalZ()
+function NormalGet(i) {
+  return i.mu + i.sd * NormalGet1()
 }
-function NormalZ(i,      w,x1,x2) {
+function NormalGet1(i,      w,x1,x2) {
   w=1;
   while (w >= 1) {
     x1= 2.0 * rand() - 1
@@ -72,7 +72,7 @@ function Hist(i,lo,hi,bins) {
   i._maxb = 0
   i.max   = 50
 }
-function Hist1(i,x,    b,n) {
+function HistAdd(i,x,    b,n) {
   if(x == i.hi)
     x -= 1e-32
   b = int(i.bins*(x - i.lo)/(i.hi - i.lo + 1e-32))
@@ -95,22 +95,32 @@ function Cliffs(i, want) {
   i.medium = 0.33
   i.small  = 0.147
   i.want   = either(want,"small")   
-  i.how    = "CliffFast"
   i.lt = i.gt = i.n = 0
 }
 function cliffsDelta(lst1,lst2,  i) {
-  Cliffs(i)
-  return Cliffs1(i,lst1,lst2)
+  Clifast(i)
+  return @Add(i,lst1,lst2)
 }
-
-function Cliffs1(i,lst1,lst2,  f,v,t) {
+function CliffsAdd(i,lst1,lst2,  f,v,t) {
   # return 1 if lst1 and lst2 are trivially different
   i.n = length(lst1) * length(lst2)
-  f = i.how
-  @f(i,lst1,lst2)
+  @Calc(i,lst1,lst2)
   return abs(i.gt - i.lo) / (i.n + 1e-32) < i[i.want]
 }
-function CliffFast(i,lst1,lst2,   
+function CliffsCalc(i,lst1,lst2,     
+                   j,k,x,y) {
+  for(j in lst1)
+    for(k in lst2) {
+      x= lst1[j]
+      y= lst2[k]
+      if(x > y) i.gt++
+      if(x < y) i.lt++
+}}
+
+function Clifast(i) {
+  isa(CliffsDelta(i))
+}
+function ClifastCalc(i,lst1,lst2,   
                    n,lst3,j,x,lo,hi) {
   n= asort(lst2, lst3)
   for(j in lst1) {
@@ -121,12 +131,4 @@ function CliffFast(i,lst1,lst2,
     i.lt += n - hi + 1
     i.gt += lo
 }}
-function CliffSlow(i,lst1,lst2,     
-                   j,k,x,y) {
-  for(j in lst1)
-    for(k in lst2) {
-      x= lst1[j]
-      y= lst2[k]
-      if(x > y) i.gt++
-      if(x < y) i.lt++
-}}
+
