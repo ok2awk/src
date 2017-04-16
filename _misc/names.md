@@ -8,6 +8,27 @@ pull apary ok2awk as asperate file
 
 fix o. looks like it is leaving in a procsym
 
+## directories
+
+any directory names `_*` is part of the ok package mangement system... don't got there
+
+all other directories are packages
+
+## packages
+
+packages live in a directory `xx`.
+
+files with that directory are all called `xx/xxone.ok, xx/xxtwo.ok`.
+
+for convenience, there should also a main file xx/xx.ok that loads
+all the other files:
+
+```
+@include "xxone"
+@include "xxwo"
+etc
+```
+
 ## error message
 
 nonexistance functions as error messags

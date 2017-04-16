@@ -66,11 +66,11 @@ build() {
 }
 makeawk() {
   echo "# $1 to awk/" 1>&2
-  awk -f ./etc/ok2awk.awk $1
+  awk -f _etc/ok2awk.awk $1
 }
 makedoc() {
   echo "# $1 to docs/" 1>&2
-  awk -f etc/ok2md.awk $1
+  awk -f _etc/ok2md.awk $1
 }
 vars() {
   [ -f "$Tmp/awkvars.out" ] && awk '
@@ -144,7 +144,7 @@ tests() {
   done
 }
 ready() {
-  for ok1 in *.ok; do
+  for ok1 in */*.ok; do
   	awk1="$Awk/${ok1%.*}.awk"
   	doc1="$Docs/${ok1%.*}.md"
 	  if [ "$ok1" -nt "$awk1" ]; then makeawk "$ok1" > "$awk1"; fi
@@ -168,7 +168,7 @@ bye() {
   git push origin master
 }
 fun() {
-	cat *[^1-9].ok |
+	cat */*[^1-9].ok |
   gawk '$0 ~ /^function.*\<'$1'\>/ {
 	       print $0
 				 while ( (getline str) > 0 ) {
@@ -176,7 +176,7 @@ fun() {
 					 if (str ~ /^}/) break}} ' $i
 }
 dirs
-ready
+#ready
 
 if   [ "$1" == "bye"     ]; then bye;
 elif [ "$1" == "hello"     ]; then hello;

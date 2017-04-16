@@ -13,12 +13,12 @@ BEGIN {
 
 """
 
-@include "maths"
-@include "tests"
-@include "strings"
-@include "lists"
-@include "objects"
-@include "meta"
+@include "oklibmaths"
+@include "oklibtests"
+@include "oklibstrings"
+@include "okliblists"
+@include "oklibobjects"
+@include "oklibmeta"
 
 BEGIN { FS=OFS="," }
 
