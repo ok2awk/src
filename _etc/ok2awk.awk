@@ -31,12 +31,12 @@ method($0) {
 
 function defMethodCall(line) {
   return gensub(/\@([A-Z][^\(]*)\(([^,]),/,
-                "__message(\\2,\"\\1\",",
+                "_message_(\\2,\"\\1\",",
                 "g",
                 line)
 }
 function defParent(kid,line) {
-  return gensub(/__isa\(([^\(]+)\(/,
+  return gensub(/_isa_\(([^\(]+)\(/,
            "isa(i,\"" kid "\",\"\\1\",\\1(",
            "g",
            line)
