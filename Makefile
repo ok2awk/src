@@ -1,28 +1,15 @@
 # If the first argument is "run"...
-COMS := run walk
 ONE := $(firstword $(MAKECMDGOALS))
-go =
-
-ifeq (run,$(ONE)) 
-	go = yes
-endif
-ifeq (walk,$(ONE))
-	go = yes
-endif
-
-ifdef go
-  RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-  $(eval $(RUN_ARGS):;@:)
-endif
+RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+$(eval $(RUN_ARGS):;@:)
 
 prog: 
 	echo 111
-.PHONY: run
 run : prog
-	@echo prog $(RUN_ARGS)
-	@echo $(MAKECMDGOALS)
-.PHONY: walk
+	echo $(MAKECMDGOALS)
 walk : prog
-	@echo walk $(RUN_ARGS)
-	@echo $(MAKECMDGOALS)
+	echo $(MAKECMDGOALS)
+
+love.txt :
+	ls > love.txt
 
