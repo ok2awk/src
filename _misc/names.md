@@ -1,4 +1,11 @@
+ok is a bashrc 
 build to different dirs
+
+add awkprof and profile to .gitignore
+
+if ok1 lives in a directory, run its awkpath
+
+install to /usr/share/ok
 
 read the awkpath for the main and check it for repeated files
 
