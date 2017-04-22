@@ -1,3 +1,8 @@
+need pathname tricks
+- repeated items on a path name (not necessatiyl and error)
+
+path written to magic local file
+
 add a cdpath to find most recent dirs
 
 -slow and fast stuff must be seperated 
