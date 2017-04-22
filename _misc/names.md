@@ -1,3 +1,10 @@
+add a cdpath to find most recent dirs
+
+-slow and fast stuff must be seperated 
+- okay sloe
+- ok fast
+- makefile trick  
+
 ok is a bashrc 
 build to different dirs
 
