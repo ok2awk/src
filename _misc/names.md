@@ -1,3 +1,15 @@
+build to different dirs
+
+read the awkpath for the main and check it for repeated files
+
+where to stick the awkpath var?
+
+no need for prefix shared with package.
+
+follow lightwieght deb conventions
+
+t
+
 build only the aa_.ok files
 
 pull apart methods names
