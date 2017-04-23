@@ -3,10 +3,20 @@
 Etc=_etc
 Config=$(HOME)/.config/ok/config
 
+##############################################
+# stuff to load defaults, then maybe override
+# them (if $(Config) exists)
+
 include $(Etc)/config.default
 -include $(Config)
 
-ready:  dirs gawk4 files
+#############################################
+# stuff to make runtime files AND dirs
+
+ready:  gawk4 dirs files
+
+#############################################
+# stuff to make runtime dirs
 
 dirs:
 	@mkdir -p $(Awk)
@@ -14,8 +24,15 @@ dirs:
 	@mkdir -p $(Tmp)
 	@mkdir -p $(Docs)
 
-gawk4: # crashes if awk != gawk verion 4.1 or later
+#############################################
+# stuff to check if our awk is good
+# crashes if awk != gawk verion 4.1 or later
+
+gawk4: 
 	@awk 'BEGIN {if (PROCINFO["version"] !~ /4.1.*/) exit 1}'
+
+#############################################
+# stuff to make runtime files
 
 .gitignore : $(Etc)/gitignore
 	cp $<  $@
@@ -39,9 +56,16 @@ $(Awk)/$G : $F
 	echo "# $< ==> $@"
 	awk -f $(Etc)/ok2awk.awk $< > $@	
 
+###########################################
+# run-ning stuff
+# assumes called via the 'run' shell script
+
 run:  
 	@$(Awk)/$(Pkg)/run $(Main).awk $(Args)
 
+###########################################
+# git stuff
+#
 gitting:
 	@git config --global user.email "$(MyEmail)"
 	@git config --global user.name  "$(MyName)"
