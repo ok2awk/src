@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+Pkg=$1
+Main=$2
+shift 2
+make ready
+make Pkg="$Pkg" Main="$Main" "Args=$@" run
+if [ -f "awkvars.out" ]; then
+  cat awkvars.out |
+  awk '/[A-Z][A-Z]/ {next} 
+                    {print "W> rogue local: " $0}'
+  rm awkvars.out
+fi

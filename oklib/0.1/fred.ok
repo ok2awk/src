@@ -1,0 +1,20 @@
+# /* vim: set filetype=awk ts=2 sw=2 sts=2 expandtab: */
+BEGIN {
+  OK.oklib.author  = "Tim Menzies"
+  OK.oklib.email   = "tim@menzies__us"
+  OK.oklib.version = "0.1"
+  OK.oklib.license = "opensource__org/licenses/BSD-3-Clause"
+  OK.oklib.more    = "ok2awk__github__io/oklib"
+}
+
+"""
+
+# About Oklib
+
+"""
+
+function helloWorld() {
+  print "Hello world!"
+}
+
+BEGIN {helloWorld() }

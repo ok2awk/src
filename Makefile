@@ -1,13 +1,10 @@
-Cmd := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-$(eval $(Cmd):;@:)
+.PHONY: all dirs gawk4 files make1 run gitready hi bye
 
 Etc=_etc
 Config=$(HOME)/.config/ok/config
 
 include $(Etc)/config.default
 -include $(Config)
-
-.PHONY: all dirs gawk4 files make1 run
 
 ready:  dirs gawk4 files
 
@@ -26,26 +23,35 @@ gawk4: # crashes if awk != gawk verion 4.1 or later
 files: .gitignore
 	@$(foreach d,$(shell find [a-z]*/* -type d -maxdepth 2),\
 		mkdir -p $(Awk)/$d;\
+		$(MAKE) -s D=$d $(Awk)/$d/run;\
 		$(foreach f, $(wildcard $d/*.ok), \
-			$(MAKE)   D=$d F=$f G=$(f:.ok=.awk) make1;))
+			$(MAKE) -s D=$d F=$f G=$(f:.ok=.awk) make1;))
 
-### run has to add the path
-make1: $(Awk)/$G $(Awk)/run
-	
+make1: $(Awk)/$G 
 
-$(Awk)/run : $D/run
+$(Awk)/$D/run : $D/run
+	echo "# $< ==> $@"
 	echo "#!/usr/bin/env bash" > $@
-	sed 's?XXX?$(Awk)?' $< >> $@
+	sed 's?XXX?$(Awk)?g' $< >> $@
 	chmod +x $@
 
 $(Awk)/$G : $F
-	echo "# $F ==> $(Awk)/$G"
+	echo "# $< ==> $@"
 	awk -f $(Etc)/ok2awk.awk $< > $@	
 
-run:  ready
-	$(Awk)/$(dir $(Cmd))run $(notdir $(Cmd))
-	@if [ -f "awkvars.out" ]; then\
-	       	awk '/[A-Z][A-Z]/ {next} {print "W> rogue local: " $0}' awkvars.out;\
-		rm awkvars.out;\
-	fi
+run:  
+	@$(Awk)/$(Pkg)/run $(Main).awk $(Args)
 
+gitting:
+	@git config --global user.email "$(MyEmail)"
+	@git config --global user.name  "$(MyName)"
+	@git config --global credential.helper cache
+	@git config credential.helper 'cache --timeout=3600'
+
+hi: gitting
+	@git pull origin master
+
+bye: gitting
+	@git add .
+	@git commit -am newStuff
+	@git push origin master
