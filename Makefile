@@ -3,7 +3,7 @@
 Etc=_etc
 Config=$(HOME)/.config/ok/config
 
-##############################################
+################################################
 # stuff to load defaults, then maybe override
 # them (if $(Config) exists)
 
