@@ -1,0 +1,2 @@
+
+AWKPATH="$1/oklib/0.1;$1" awk -d -p -f $2

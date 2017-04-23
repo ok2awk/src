@@ -10,6 +10,7 @@
 @include "tim"
 @include "timstats"
 
+# asd
 function _norm(f, n,r,h) {
 	print("")
 	Normal(n,10,1)

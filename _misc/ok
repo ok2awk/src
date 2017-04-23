@@ -1,0 +1,202 @@
+#!/usr/bin/env bash
+# /* vim: set filetype=sh ts=2 sw=2 sts=2  : */
+
+#######################################################################
+# Begin CONFIG
+# The follow defaults can be over-written by change the file ok.rc
+
+mkdir -p "$HOME/.config/ok"
+Config="$HOME/.config/ok/config"
+
+if [ ! -f "$Config" ]; then cat <<-EOF > "$Config"
+    MyName="Omar Khayyam" # 11th century scholar. cool guy. look him up!
+    MyEmail="omar@khayyam__persia"
+    MySite="ok2awk__github__io"
+    MyLicense="opensource__org/licenses/BSD-3-Clause"
+    MyHeader="# /* vim: set filetype=awk ts=2 sw=2 sts=2 expandtab: */"
+  
+    Awk="$HOME/opt/ok/awk"   # where to keep the generated awk files
+    Lib="$HOME/opt/ok/lib"   # where to keep the built awk apps
+    Tmp="$HOME/opt/ok/tmp"   # where to write temporaroes
+    Docs="$HOME/opt/ok/docs" # where to write Markdown files
+EOF
+fi
+
+. "$Config"
+
+
+# End CONFIG
+#######################################################################
+
+dirs() {
+  mkdir -p "$Awk" "$Lib" "$Tmp"  "$Docs" 
+}
+earlyAwk() {
+  awk -W version | awk -F, '/Awk/ {split($1,a," "); if (a[3] < 4) {exit 0 } else {exit 1}}'
+}
+if    [ -z `which awk` ] || earlyAwk
+then    echo 'Awk vertion 4+ not found. Exiting'
+    exit 1
+fi
+
+build() {
+  f=${1%.*}
+    here=${PWD}
+    cd "$Awk"
+    awk '
+    BEGIN { print "#!'`which gawk`' -f "
+              build("'$f'") 
+    }
+    function build(f,    seen,lvl, g,str,a) {
+        g = f ".awk"
+      if (g in seen) return
+        seen[g]
+        print "# --------------------------------------------"
+        print "# " lvl "/" f
+        while((getline str < g) > 0) {
+          if (str ~ /^@include/) {
+                split(str,a,"\"")
+                build(a[2], seen,lvl "/" f) 
+            } else
+              print str
+        }
+        close(g)
+    } ' >  "$Lib/$f"
+    cd "$here"
+}
+makeawk() {
+  echo "# $1 to awk/" 1>&2
+  awk -f _etc/ok2awk.awk $1
+}
+makedoc() {
+  echo "# $1 to docs/" 1>&2
+  awk -f _etc/ok2md.awk $1
+}
+vars() {
+  [ -f "$Tmp/awkvars.out" ] && awk '
+        /[A-Z][A-Z]/ {next}
+        {print "W> rogue local: ",$0}' $Tmp/awkvars.out
+}
+file() {
+  if [ -z "$1" ]; then
+    echo "Missing stem"
+  elif [ -f "$1.ok" ];  then
+    echo "cannot create $1 files, they already exists"
+  else
+    cat<<-EOF > $1.ok
+$MyHeader
+BEGIN {
+  OK.$1.author  = "$MyName"
+  OK.$1.email   = "$MyEmail"
+  OK.$1.version = "0.1"
+  OK.$1.license = "$MyLicense"
+  OK.$1.more    = "$MySite/$1"
+}
+
+"""
+
+## About ${1^}
+
+"""
+
+@include "oklib"
+
+EOF
+  cat<<-EOF > ${1}1.ok
+$MyHeader
+
+"""
+
+## Testing ${1^}
+
+"""
+
+@include "oklib"
+@include "$1"
+
+BEGIN {
+  tests("")
+}
+EOF
+   echo "See $1.ok (for code) and  ${1}1.ok (for tests)."
+fi
+}
+profile() {
+  if [ -f "$Tmp/awkprof.out" ]; then
+    cat "$Tmp/awkprof.out"
+  fi
+}
+run() {
+  AWKPATH="$Awk:$AWKPATH" gawk '
+       @include "oklib"
+         BEGIN {  '"$*"'}'
+}
+tests() {
+  for n in $*; do
+    for i in *$n.ok; do
+      f=${i%.*}
+      echo ""
+      echo "### --- $f -------------"
+      ./ok $f
+    done | tee $Tmp/test$n.out
+    echo -n "PASSED "; grep -c PASSED $Tmp/test$n.out
+    echo -n "FAILED "; grep -c FAILED $Tmp/test$n.out
+  done
+}
+ready() {
+  for ok1 in */*.ok; do
+      awk1="$Awk/${ok1%.*}.awk"
+      doc1="$Docs/${ok1%.*}.md"
+      if [ "$ok1" -nt "$awk1" ]; then makeawk "$ok1" > "$awk1"; fi
+      if [ "$ok1" -nt "$doc1" ]; then makedoc "$ok1" > "$doc1"; fi
+  done
+}
+gitready() {
+  git config --global user.email "$MyEmail"
+  git config --global user.name  "$MyName"
+  git config --global credential.helper cache
+  git config credential.helper 'cache --timeout=3600'
+}
+hello() {
+  gitready
+  git pull origin master
+}
+bye() {
+  gitready
+  git add .
+  git commit -am newStuff
+  git push origin master
+}
+fun() {
+    cat */*[^1-9].ok |
+  gawk '$0 ~ /^function.*\<'$1'\>/ {
+           print $0
+                 while ( (getline str) > 0 ) {
+                     print str
+                     if (str ~ /^}/) break}} ' $i
+}
+dirs
+#ready
+
+if   [ "$1" == "bye"     ]; then bye;
+elif [ "$1" == "hello"     ]; then hello;
+elif [ "$1" == "profile" ]; then profile;
+elif [ "$1" == "1"       ]; then tests 1;
+elif [ "$1" == "12"      ]; then tests 1 2;
+elif [ "$1" == "123"     ]; then tests 1 2 3;
+elif [ "$1" == "1234"    ]; then tests 1 2 3 4;
+elif [ "$1" == "file"    ]; then file $2;
+elif [ "$1" == "build"   ]; then build $2;
+elif [ "$1" == "fun"     ]; then fun $2;
+elif [ "$1" == "run"      ]; then
+  shift
+  run "$*"
+elif [ -f "$Awk/$1.awk"  ]; then
+  AWKPATH="$Awk:$AWKPATH" gawk          \
+       --dump-variables="$Tmp/awkvars.out" \
+       --profile="$Tmp/awkprof.out"         \
+       -f $1.awk 
+  vars;
+else
+    echo "usage ./ok (new | old | profile | file | 1234)"
+fi
