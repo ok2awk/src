@@ -1,3 +1,16 @@
+MY = your dir
+
+THIS
+THE
+e.g. @include THE/xx -- the = path root
+e.g. @include LAST/yy/xxx -- latest version of yy
+e.g. @include THIS/xxx -- this package
+
+add a single use ok that compiles the input file
+and loads it
+
+add front of line space to by leftover macros
+
 need pathname tricks
 - repeated items on a path name (not necessatiyl and error)
 

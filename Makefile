@@ -13,7 +13,7 @@ include $(Etc)/config.default
 #############################################
 # stuff to make runtime files AND dirs
 
-ready:  gawk4 dirs files
+ready:  gawk4 dirs $(Tmp)/thsOurHis.sh files
 
 #############################################
 # stuff to make runtime dirs
@@ -37,24 +37,23 @@ gawk4:
 .gitignore : $(Etc)/gitignore
 	cp $<  $@
 
+PACKAGES:=$(shell find [a-z]*/* -maxdepth 2 -type d)
+
+$(Tmp)/last.awk: $(PACKAGES)  
+	echo $< | awk -f  $(Etc)/last.awk Awk="$Awk" > $@
+
 files: .gitignore
-	@$(foreach d,$(shell find [a-z]*/* -type d -maxdepth 2),\
+	@$(foreach d, $(PACKAGES),\
 		mkdir -p $(Awk)/$d;\
-		$(MAKE) -s D=$d $(Awk)/$d/run;\
 		$(foreach f, $(wildcard $d/*.ok), \
-			$(MAKE) -s D=$d F=$f G=$(f:.ok=.awk) make1;))
+			$(MAKE) -s D="$d" F="$f" G="$(f:.ok=.awk)" make1;))
 
 make1: $(Awk)/$G 
 
-$(Awk)/$D/run : $D/run
-	echo "# $< ==> $@"
-	echo "#!/usr/bin/env bash" > $@
-	sed 's?XXX?$(Awk)?g' $< >> $@
-	chmod +x $@
-
 $(Awk)/$G : $F
 	echo "# $< ==> $@"
-	awk -f $(Etc)/ok2awk.awk $< > $@	
+	awk -f $(Etc)/ok2awk.awk THIS="$D" THE="$(Awk)" $<  \
+	| awk -f $(Tmp)/last.awk > $@	
 
 ###########################################
 # run-ning stuff
