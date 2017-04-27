@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+#####
+
+
+#####
+if ! awk 'BEGIN {if (PROCINFO["version"] !~ /4.1.*/) exit 1}'; then
+  echo "Needs awk v4+"
+fi
+
+Ok=$2
+Stem=`basename $2 .ok`
+Awk=$2.awk
+shift 2
+Args="$@"
+
+uses() { cat $1 | awk '
+/@include/ { split($0, a, " "); rinc(a[2]) }
+function rinc(f,lst,lvl) {
+  FS=" "
+  gsub(/"/,"",f)
+  f=f".ok"
+  lst[f]++
+  #print f,lst[f]
+  if (lst[f] == 1)  {
+    print ">>",lvl,f
+    while ((getline < f) > 0)   
+      if (/^@include/)   
+        rinc($2,lst,lvl+1)
+    close(f)
+  }}
+'
+}
+uses $Ok
