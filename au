@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+# /* vim: set filetype=sh   : */
+
+# defaults
+MyEmail="tim@menzies.us"
+MyName="Tim Menzies"
+Src=$(PWD)
+Bin=$(PWD)
+Tmp=$(PWD)
+Compile=1
+Rogue=1
+File=code
+#######################
+help() { cat <<-EOF
+	au: the gold file processor
+	Copyright (C) 2017, Tim Menzies, tim@menzies.us, BSD-3-clause 
+	
+	usage: au -[bnst] -f file.au [flags]
+	
+	 -f FILE   Read source code from FILE.au;
+	 -b DIR    Write x.au to DIR/x.awk;
+	 -s DIR    Read x.au from DIR/x.au       
+	 -t DIR    Use DIR for any temp work
+	 -n        Do not auto-compile files;
+	 -v        Do not check for rogue variables;
+	 -F        fast mode; equivalent to -v -n;
+	 -h        print help.
+EOF
+}
+while getopts "f:s:b:t:nhvF0pP" opt; do
+  case $opt in
+    b) Bin=$OPTARG   ;;
+    f) File=$OPTARG  ;;
+    h) help          ; exit ;;
+    s) Src=$OPTARG   ;;
+    t) Tmp=$OPTARG   ;;
+    n) Compile=""    ;;
+    v) Rogue=""      ;;
+    F) Rogue="" ; Compile="" ;;
+    0) git config --global user.email "$MyEmail"
+       git config --global user.name  "$MyName"
+       git config --global credential.helper cache
+       git config credential.helper 'cache --timeout=3600' ;;
+    p) git pull origin master ;;
+    P) git add . ; 
+       git commit -am newStuff; 
+       git push origin master   ;;
+    E) MyEmail=$OPTARG ;;
+    N) MyName="$OPTARG" ;;
+    *) echo "usage: au -[bhstnv0pPF] -f file.au" >&2 ; exit ;;
+  esac
+done
+shift $(($OPTIND - 1))
+Flags="$@"
+
+mkdir -p $Src $Bin $Tmp
+
+if ! awk 'BEGIN {if (PROCINFO["version"] !~ /4.1.*/) exit 1}'; then
+  echo "Needs awk v4+"
+fi
+
+if [ ! -f .gitignore ]; then 
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+awkprof.out
+awkvars.out
+.netrwhist
+*~
+tmp
+fi
+### interators
+au2awk() { cat - | awk '
+BEGIN           { In = 1 }
+gsub(/^"""/,"") { In =  1 - In }
+method($0)      {
+	$0= defMethod($0)  $0 }
+/^function/ {
+	LastFunction=$0
+  	gsub(/^function[ \t]+/,"",LastFunction)
+  	gsub(/\(.*/,"",LastFunction) }
+{ pre = In ? "" : "## "
+  	if (In)  {
+    		$0 = defParent(LastFunction, $0)
+    		$0 = defMethodCall($0)
+  	}
+  	txt = dashes2Dots( dots2NestedLists($0) )
+  	print pre txt }
+
+### support code
+function defMethodCall(line) {
+  return gensub(/\@([A-Z][^\(]*)\(([^,]),/,
+                "_message_(\\2,\"\\1\",",
+                "g",
+                line) }
+function defParent(kid,line) {
+  return gensub(/_isa_\(([^\(]+)\(/,
+           "isa(i,\"" kid "\",\"\\1\",\\1(",
+           "g",
+           line) }
+function method(txt) {
+  return txt ~ /^function[ \t]*[A-Z].+[A-Z].*\(/ }
+function defMethod(txt) {
+  return gensub(/(^function[ \t]+)([A-Z][0-9a-z_]+)([A-Z][A-Za-z_0-9]+)\(.*/,
+           "BEGIN { defMethod(\"\\2\",\"\\3\")} ",
+           "g",
+           txt) }
+function dots2NestedLists(txt) {
+  return gensub(/\.([a-zA-Z_])([a-zA-Z0-9_]*)/,
+           "[\"\\1\\2\"]",
+           "g",
+           txt) }
+function dashes2Dots(txt) {
+  gsub(/__/,".",txt)
+  return txt }
+'
+}
+echo "src $Src bin $Bin"
+
+if [ -n "$Compile" ]; then
+   for f in $Src/*.au; do
+       g=$Bin/${f%.au}.awk
+       echo "# $Src/$f ==> $g" >&2 
+       if [ "$Src/$f" -nt "$g" ]; then
+	  cat $Src/$f | au2awk > $g
+       fi
+   done
+fi
+exit
+Ok=$2
+Stem=`basename $2 .ok`
+Awk=$2.awk
+shift 2
+Args="$@"
+
+
