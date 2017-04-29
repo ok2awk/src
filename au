@@ -42,8 +42,8 @@ while getopts "f:s:b:t:nhvF0pP" opt; do
        git config --global credential.helper cache
        git config credential.helper 'cache --timeout=3600' ;;
     p) git pull origin master ;;
-    P) git add . ; 
-       git commit -am newStuff; 
+    P) git add .  
+       git commit -am newStuff 
        git push origin master   ;;
     E) MyEmail=$OPTARG ;;
     N) MyName="$OPTARG" ;;
