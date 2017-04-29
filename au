@@ -120,10 +120,9 @@ function dashes2Dots(txt) {
 if [ -n "$Compile" ]; then
    for f in $Src/*.au; do
        g=${f%.au}.awk
-       if [ "$f" -nt "$g" ]; then
-          echo "# $f ==> $g" >&2 
-	  cat $f | au2awk > $g
-       fi
+       if [ "$g" -nt "$f" ]; then continue; fi
+       echo "# $f ==> $g" >&2 
+       cat $f | au2awk > $g
    done
 fi
 exit
