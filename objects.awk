@@ -1,0 +1,86 @@
+# /* vim: set filetype=awk ts=2 sw=2 sts=2 expandtab: */
+BEGIN {
+  OK["objects"]["author"]  = "Tim Menzies"
+  OK["objects"]["email"]   = "tim@menzies.us"
+  OK["objects"]["version"] = "0.1"
+  OK["objects"]["license"] = "opensource.org/licenses/BSD-3-Clause"
+  OK["objects"]["more"]    = "ok2awk.github.io/objects"
+}
+
+## 
+## 
+## ## About Objects
+## 
+
+
+@include "oklib"
+
+function has(lst,key) { 
+  lst[key][314286]
+  split("",lst[key],"")
+}
+function have(lst,key,fun) { 
+  has(lst,key)
+  if (fun)
+    @fun(lst[key]) 
+}
+function haves(lst,key,fun,
+               a,b,c,d,e) { 
+  has(lst,key)
+  if (fun) {
+    if      (a=="") @fun(lst[key]) 
+    else if (b=="") @fun(lst[key],a) 
+    else if (c=="") @fun(lst[key],a,b) 
+    else if (d=="") @fun(lst[key],a,b,c) 
+    else if (e=="") @fun(lst[key],a,b,c,d) 
+    else            @fun(lst[key],a,b,c,d,e) 
+}}
+function _defMethod_(class,method) {
+  OK["objects"][class][method] = class method
+}
+function methodLookup(i,method,    class) {
+  class=objectp(i)
+  while class {
+    if (method in OK["objects"][class])
+      return OK["objects"][class][method]
+    else {
+      if (class in OK["objects"]["parent"])
+        class = OK["objects"]["parent"][class]
+      else
+        break
+  }
+  methodNotFound(method)
+}
+function _message_(i,fun,a,b,c,d,e) {
+  fun = methodLookUp(i,fun)
+  if (fun) {
+    if      (a=="") return @fun(i)
+    else if (b=="") return @fun(i,a)
+    else if (c=="") return @fun(i,a,b)
+    else if (d=="") return @fun(i,a,b,c)
+    else if (e=="") return @fun(i,a,b,c,d)
+    else            return @fun(i,a,b,c,d,e)
+  } else 
+    methodNotFound(what)
+}
+function Object(i) {
+  i["_isa_"]="object"
+}
+function objectp(i) {
+  if (isarray(i))
+    if ("_isa_" in i)
+      return i["_isa_"] 
+}
+function _isa_(i,kid,parent,_,  up) {
+  up=objectp(parent)
+  if (up)
+    OK["oklib"]["objects"]["parent"][kid] = up
+  i["_isa_"] = kid
+}
+BEGIN { OK["objects"]["id"] = 0  }
+
+function id(   tmp) {
+  tmp = OK["objects"]["id"] = OK["objects"]["_id_"] + 1
+  return tmp
+}
+

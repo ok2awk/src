@@ -116,14 +116,13 @@ function dashes2Dots(txt) {
   return txt }
 '
 }
-echo "src $Src bin $Bin"
 
 if [ -n "$Compile" ]; then
    for f in $Src/*.au; do
-       g=$Bin/${f%.au}.awk
-       echo "# $Src/$f ==> $g" >&2 
-       if [ "$Src/$f" -nt "$g" ]; then
-	  cat $Src/$f | au2awk > $g
+       g=${f%.au}.awk
+       if [ "$f" -nt "$g" ]; then
+          echo "# $f ==> $g" >&2 
+	  cat $f | au2awk > $g
        fi
    done
 fi
